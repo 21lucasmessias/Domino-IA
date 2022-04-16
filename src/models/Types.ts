@@ -1,4 +1,5 @@
 export type Value =
+    | 0
     | 0.05
     | 0.1
     | 0.25

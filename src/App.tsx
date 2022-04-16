@@ -1,9 +1,8 @@
 import { Flex } from '@chakra-ui/react';
-import { useCallback, useEffect, useState } from 'react';
 import { Board } from './components/Board';
 import { Header } from './components/Header';
+import { useDomino } from './Domino';
 import { useGreedySearch } from './GreedySearch';
-
 import { Location, Piece, Player } from './models/Types';
 
 export interface SearchAlgorithmProps {
@@ -21,30 +20,8 @@ export interface SearchAlgorithm {
     execute: () => SearchAlgorithmResponse;
 }
 
-const useMonetaryPieces = () => {
-    const [pieces, setPieces] = useState([]);
-
-    useEffect(() => {}, []);
-
-    return { pieces };
-};
-
 function App() {
-    const { pieces } = useMonetaryPieces();
-
-    const [agent, setAgent] = useState<Player>({
-        pieces: [],
-        score: 0,
-    });
-
-    const [player, setPlayer] = useState<Player>({
-        pieces: [],
-        score: 0,
-    });
-
-    const [boardPieces, setBoardPieces] = useState<Array<Piece>>([]);
-
-    const placePiece = useCallback(() => {}, [boardPieces, agent]);
+    const { deck, player, agent, boardPieces, placePiece, start } = useDomino();
 
     const { execute } = useGreedySearch({ agent, boardPieces, placePiece });
 
@@ -65,7 +42,7 @@ function App() {
                 overflow="hidden"
                 w="100%"
             >
-                <Header execute={execute} />
+                <Header start={start} />
                 <Board />
             </Flex>
         </Flex>
