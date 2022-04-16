@@ -15,6 +15,7 @@ function App() {
         placePiece,
         start,
         getStartingPlayer,
+        toggleShift,
     } = useDomino({
         useDominoVariation: useMonetaryPieces,
         useSearchAlgorithm: useGreedySearch,
@@ -39,6 +40,7 @@ function App() {
                 w="100%"
             >
                 <Header start={start} />
+                <Header start={toggleShift} />
                 <Board />
             </Flex>
         </Flex>

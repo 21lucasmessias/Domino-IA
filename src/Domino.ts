@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import {
     SearchAlgorithm,
@@ -29,6 +29,7 @@ interface DominoGame {
         agentPieces: Array<Piece>,
         playerPieces: Array<Piece>
     ) => 'agent' | 'player';
+    toggleShift: () => void;
 }
 
 export const useDomino: (props: DominoGameProps) => DominoGame = ({
@@ -196,6 +197,29 @@ export const useDomino: (props: DominoGameProps) => DominoGame = ({
         []
     );
 
+    const toggleShift = useCallback(() => {
+        if (shift === 'agent') {
+            setShift('player');
+            return;
+        }
+        setShift('agent');
+        return;
+    }, [shift]);
+
+    useEffect(() => {
+        if (shift === 'agent') {
+            var res = execute();
+            while (!res) {
+                // buy piece retorna nulo caso n tenha mais pra comprar
+                if (!buyresponse) return;
+                res = execute();
+            }
+
+            placePiece(res);
+            toggleShift();
+        }
+    }, [shift]);
+
     const value = useMemo(
         () => ({
             deck,
@@ -206,8 +230,18 @@ export const useDomino: (props: DominoGameProps) => DominoGame = ({
             placePiece,
             start,
             getStartingPlayer,
+            toggleShift,
         }),
-        [deck, player, agent, boardPieces, shift, placePiece, start]
+        [
+            deck,
+            player,
+            agent,
+            boardPieces,
+            shift,
+            placePiece,
+            start,
+            toggleShift,
+        ]
     );
 
     return value;
