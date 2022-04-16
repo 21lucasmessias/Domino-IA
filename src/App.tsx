@@ -1,9 +1,9 @@
 import { Flex } from '@chakra-ui/react';
-import { Board } from './components/Board';
 import { Header } from './components/Header';
 import { useDomino } from './Domino';
 import { useMonetaryPieces } from './variations/Monetary';
 import { useGreedySearch } from './GreedySearch';
+import { Game } from './components/Game';
 
 function App() {
     const {
@@ -21,7 +21,8 @@ function App() {
         useSearchAlgorithm: useGreedySearch,
     });
 
-    console.log(shift);
+    console.log({ player, agent, boardPieces });
+
     return (
         <Flex
             w="100%"
@@ -31,7 +32,7 @@ function App() {
             overflow="hidden"
         >
             <Flex
-                maxW={['100%', '100%', '720px', '1080px']}
+                maxW={['100%', '100%', '100%', '1080px', '1680px']}
                 mx="auto"
                 direction="column"
                 gap={4}
@@ -40,8 +41,7 @@ function App() {
                 w="100%"
             >
                 <Header start={start} />
-                <Header start={toggleShift} />
-                <Board />
+                <Game agent={agent} boardPieces={boardPieces} player={player} />
             </Flex>
         </Flex>
     );
