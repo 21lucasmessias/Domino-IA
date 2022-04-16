@@ -29,6 +29,7 @@ export const useDomino: (
         pieces: [],
         score: 0,
     });
+
     const [player, setPlayer] = useState<Player>({
         id: uuid(),
         pieces: [],
