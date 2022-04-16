@@ -14,15 +14,21 @@ interface DominoGame {
     player: Player;
     agent: Player;
     boardPieces: Piece[];
+    shift: 'agent' | 'player' | undefined;
     placePiece: (props: SearchAlgorithmResponse) => void;
     start: () => void;
-    getStartingPlayer: (pieces: Array<Piece>) => string;
+    getStartingPlayer: (
+        agentPieces: Array<Piece>,
+        playerPieces: Array<Piece>
+    ) => 'agent' | 'player';
 }
 
 export const useDomino: (
     dominoVariation: () => DominoVariation
 ) => DominoGame = (dominoVariation) => {
-    const shift = undefined;
+    const [shift, setShift] = useState<'agent' | 'player' | undefined>(
+        undefined
+    );
     const [deck, setDeck] = useState<Array<Piece>>([]);
     const [agent, setAgent] = useState<Player>({
         id: uuid(),
@@ -89,6 +95,12 @@ export const useDomino: (
         setPlayer(newPlayer);
         setAgent(newAgent);
         setBoardPieces([]);
+
+        const startingPlayer = getStartingPlayer(
+            newAgent.pieces,
+            newPlayer.pieces
+        );
+        setShift(startingPlayer);
     }, [distributePieces]);
 
     const removePieceFromPlayer = useCallback(
@@ -127,22 +139,66 @@ export const useDomino: (
         [boardPieces, removePieceFromPlayer]
     );
 
-    const getStartingPlayer = useCallback((pieces: Array<Piece>) => {
-        console.log(pieces);
-        return 'aaa';
-    }, []);
+    const getStartingPlayer = useCallback(
+        (agentPieces: Array<Piece>, playerPieces: Array<Piece>) => {
+            var higherDoubleAgentPiece = { left: -1, right: -1 };
+            var higherDoublePlayerPiece = { left: -1, right: -1 };
+            var higherValueAgentPiece = 0;
+            var higherValuePlayerPiece = 0;
+
+            agentPieces.forEach((piece) => {
+                if (piece.left === piece.right) {
+                    if (piece.left > higherDoubleAgentPiece.left)
+                        higherDoubleAgentPiece = piece;
+                }
+            });
+
+            playerPieces.forEach((piece) => {
+                if (piece.left === piece.right) {
+                    if (piece.left > higherDoublePlayerPiece.left)
+                        higherDoublePlayerPiece = piece;
+                }
+            });
+
+            if (higherDoubleAgentPiece.left !== higherDoublePlayerPiece.left) {
+                //se algum player tem carta espelhada
+                if (higherDoubleAgentPiece.left > higherDoublePlayerPiece.left)
+                    // se a carta espelhada do agente é maior que a do player
+                    return 'agent';
+                return 'player';
+            } else {
+                //se nenhum tem carta espelhada
+                agentPieces.forEach((piece) => {
+                    var currentPieceValue = piece.left + piece.right;
+                    if (currentPieceValue >= higherValueAgentPiece)
+                        higherValueAgentPiece = currentPieceValue;
+                });
+
+                playerPieces.forEach((piece) => {
+                    var currentPieceValue = piece.left + piece.right;
+                    if (currentPieceValue >= higherValuePlayerPiece)
+                        higherValuePlayerPiece = currentPieceValue;
+                });
+                if (higherValueAgentPiece > higherValuePlayerPiece)
+                    return 'agent';
+                return 'player';
+            }
+        },
+        []
+    );
 
     const value = useMemo(
         () => ({
             deck,
             player,
             agent,
+            shift,
             boardPieces,
             placePiece,
             start,
             getStartingPlayer,
         }),
-        [deck, player, agent, boardPieces, placePiece, start]
+        [deck, player, agent, boardPieces, shift, placePiece, start]
     );
 
     return value;

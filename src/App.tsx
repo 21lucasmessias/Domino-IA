@@ -9,12 +9,14 @@ function App() {
         deck,
         player,
         agent,
+        shift,
         boardPieces,
         placePiece,
         start,
         getStartingPlayer,
     } = useDomino(useMonetaryPieces);
 
+    console.log(shift);
     return (
         <Flex
             w="100%"
