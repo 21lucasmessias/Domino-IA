@@ -210,22 +210,29 @@ export const useDomino: (props: DominoGameProps) => DominoGame = ({
     }, [shift]);
 
     const buyPiece = useCallback(
-        (player: Player) => {
+        (who: Player): boolean => {
             if (deck.length === 0) {
                 return false;
             }
 
             const newDeck = [...deck];
-            const newPlayer = { ...player };
-
             const randomPosition = Math.floor(
                 Math.random() * (newDeck.length - 1)
             );
-            newPlayer.pieces.push(newDeck[randomPosition]);
+
+            if (who.id === player.id) {
+                const newPlayer = { ...who };
+                newPlayer.pieces.push(newDeck[randomPosition]);
+                setPlayer(newPlayer);
+            } else {
+                const newAgent = { ...who };
+                newAgent.pieces.push(newDeck[randomPosition]);
+                setAgent(newAgent);
+            }
+
             newDeck.splice(randomPosition, 1);
 
             setDeck(newDeck);
-            setPlayer(newPlayer);
 
             return true;
         },
@@ -240,9 +247,8 @@ export const useDomino: (props: DominoGameProps) => DominoGame = ({
                 const successfullBought = buyPiece(agent);
                 if (!successfullBought) {
                     toast({
-                        title: 'Compra',
+                        title: 'Bloqueado',
                         status: 'error',
-                        description: 'Bloqueado',
                     });
 
                     return;
