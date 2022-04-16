@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { Piece, Player } from './models/Types';
+import { Location, Piece, Player } from './models/Types';
 
 export interface DominoVariation {
     pieces: Array<Piece>;
@@ -12,7 +12,7 @@ interface DominoGame {
     player: Player;
     agent: Player;
     boardPieces: Piece[];
-    placePiece: () => void;
+    placePiece: (piece: Piece, location: Location) => void;
     start: () => void;
 }
 
@@ -72,18 +72,44 @@ export const useDomino: (
             newPlayer,
             newAgent,
         };
-    }, [pieces]);
+    }, [pieces, initialQtyOfPieces]);
 
     const start = useCallback(() => {
-        const { newDeck, newAgent, newPlayer } = distributePieces();
+        const { newDeck, newPlayer, newAgent } = distributePieces();
 
         setDeck(newDeck);
         setPlayer(newPlayer);
         setAgent(newAgent);
         setBoardPieces([]);
-    }, [pieces]);
+    }, [distributePieces]);
 
-    const placePiece = useCallback(() => {}, [boardPieces, agent]);
+    const removePieceFromAgent = useCallback(
+        (piece: Piece) => {
+            const newAgent = { ...agent };
+            agent.pieces = agent.pieces.filter(
+                (agentPiece) => agentPiece.id !== piece.id
+            );
+            setAgent(newAgent);
+        },
+        [agent]
+    );
+
+    const placePiece = useCallback(
+        (piece: Piece, location: Location) => {
+            removePieceFromAgent(piece);
+
+            var newBoardPieces = [...boardPieces];
+
+            if (location === 'start') {
+                newBoardPieces = [piece, ...newBoardPieces];
+            } else {
+                newBoardPieces = [...newBoardPieces, piece];
+            }
+
+            setBoardPieces(newBoardPieces);
+        },
+        [boardPieces, removePieceFromAgent]
+    );
 
     const value = useMemo(
         () => ({
