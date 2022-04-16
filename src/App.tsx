@@ -3,6 +3,7 @@ import { Board } from './components/Board';
 import { Header } from './components/Header';
 import { useDomino } from './Domino';
 import { useMonetaryPieces } from './variations/Monetary';
+import { useGreedySearch } from './GreedySearch';
 
 function App() {
     const {
@@ -13,7 +14,10 @@ function App() {
         placePiece,
         start,
         getStartingPlayer,
-    } = useDomino(useMonetaryPieces);
+    } = useDomino({
+        useDominoVariation: useMonetaryPieces,
+        useSearchAlgorithm: useGreedySearch,
+    });
 
     return (
         <Flex
