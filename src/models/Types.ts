@@ -14,7 +14,7 @@ export type Value =
     | 200;
 
 export type Piece = {
-    id: String;
+    id: string;
     left: Value;
     right: Value;
 };
