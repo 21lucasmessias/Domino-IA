@@ -38,7 +38,9 @@ export const useGreedySearch: (
                     piece,
                     location: 'start',
                 });
-            } else if (verifyMatch(piece, endPiece)) {
+            }
+
+            if (verifyMatch(piece, endPiece)) {
                 possibilities.push({
                     piece,
                     location: 'end',
@@ -55,10 +57,17 @@ export const useGreedySearch: (
         if (possibilities.length === 0) {
             return null;
         }
+        if (possibilities.length === 1) {
+            return {
+                piece: possibilities[0].piece,
+                location: possibilities[0].location,
+                who: agent,
+            };
+        }
 
         return {
-            piece: possibilities[0].piece,
-            location: possibilities[0].location,
+            piece: possibilities[1].piece,
+            location: possibilities[1].location,
             who: agent,
         };
     };
