@@ -1,6 +1,8 @@
 import { useCallback, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
-import { Location, Piece, Player } from './models/Types';
+import { useGreedySearch } from './GreedySearch';
+import { SearchAlgorithmResponse } from './models/Algorithm';
+import { Piece, Player } from './models/Types';
 
 export interface DominoVariation {
     pieces: Array<Piece>;
@@ -12,8 +14,7 @@ interface DominoGame {
     player: Player;
     agent: Player;
     boardPieces: Piece[];
-
-    placePiece: (piece: Piece, location: Location, who: Player) => void;
+    placePiece: (props: SearchAlgorithmResponse) => void;
     start: () => void;
     getStartingPlayer: (pieces: Array<Piece>) => string;
 }
@@ -21,16 +22,13 @@ interface DominoGame {
 export const useDomino: (
     dominoVariation: () => DominoVariation
 ) => DominoGame = (dominoVariation) => {
-    const { pieces, initialQtyOfPieces } = dominoVariation();
     const shift = undefined;
     const [deck, setDeck] = useState<Array<Piece>>([]);
-
     const [agent, setAgent] = useState<Player>({
         id: uuid(),
         pieces: [],
         score: 0,
     });
-
     const [player, setPlayer] = useState<Player>({
         id: uuid(),
         pieces: [],
@@ -38,6 +36,9 @@ export const useDomino: (
     });
 
     const [boardPieces, setBoardPieces] = useState<Array<Piece>>([]);
+
+    const { pieces, initialQtyOfPieces } = dominoVariation();
+    const { execute } = useGreedySearch({ agent, boardPieces });
 
     const distributePieces = useCallback((): {
         newDeck: Piece[];
@@ -109,7 +110,7 @@ export const useDomino: (
     );
 
     const placePiece = useCallback(
-        (piece: Piece, location: Location, who: Player) => {
+        ({ piece, location, who }) => {
             removePieceFromPlayer(piece, who);
 
             var newBoardPieces = [...boardPieces];
