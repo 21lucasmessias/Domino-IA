@@ -9,7 +9,7 @@ export type SearchAlgorithmResponse = {
     piece: Piece;
     location: Location;
     who: Player;
-};
+} | null;
 
 export interface SearchAlgorithm {
     execute: () => SearchAlgorithmResponse;
