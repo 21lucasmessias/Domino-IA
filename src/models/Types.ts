@@ -22,6 +22,7 @@ export type Piece = {
 export type Location = 'start' | 'end';
 
 export type Player = {
+    id: string;
     pieces: Array<Piece>;
     score: number;
 };
