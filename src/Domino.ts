@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-
+import { v4 as uuid } from 'uuid';
 import { Location, Piece, Player } from './models/Types';
 
 export interface DominoVariation {
@@ -12,7 +12,7 @@ interface DominoGame {
     player: Player;
     agent: Player;
     boardPieces: Piece[];
-    placePiece: (piece: Piece, location: Location) => void;
+    placePiece: (piece: Piece, location: Location, who: Player) => void;
     start: () => void;
 }
 
@@ -24,11 +24,13 @@ export const useDomino: (
     const [deck, setDeck] = useState<Array<Piece>>([]);
 
     const [agent, setAgent] = useState<Player>({
+        id: uuid(),
         pieces: [],
         score: 0,
     });
 
     const [player, setPlayer] = useState<Player>({
+        id: uuid(),
         pieces: [],
         score: 0,
     });
@@ -43,10 +45,12 @@ export const useDomino: (
         const newDeck = [...pieces];
 
         const newPlayer: Player = {
+            id: uuid(),
             pieces: [],
             score: 0,
         };
         const newAgent: Player = {
+            id: uuid(),
             pieces: [],
             score: 0,
         };
@@ -83,20 +87,28 @@ export const useDomino: (
         setBoardPieces([]);
     }, [distributePieces]);
 
-    const removePieceFromAgent = useCallback(
-        (piece: Piece) => {
-            const newAgent = { ...agent };
-            agent.pieces = agent.pieces.filter(
-                (agentPiece) => agentPiece.id !== piece.id
-            );
-            setAgent(newAgent);
+    const removePieceFromPlayer = useCallback(
+        (piece: Piece, who: Player) => {
+            if (who.id === player.id) {
+                const newPlayer = { ...player };
+                player.pieces = player.pieces.filter(
+                    (playerPiece) => playerPiece.id !== piece.id
+                );
+                setAgent(newPlayer);
+            } else {
+                const newAgent = { ...agent };
+                agent.pieces = agent.pieces.filter(
+                    (agentPiece) => agentPiece.id !== piece.id
+                );
+                setAgent(newAgent);
+            }
         },
-        [agent]
+        [player, agent]
     );
 
     const placePiece = useCallback(
-        (piece: Piece, location: Location) => {
-            removePieceFromAgent(piece);
+        (piece: Piece, location: Location, who: Player) => {
+            removePieceFromPlayer(piece, who);
 
             var newBoardPieces = [...boardPieces];
 
@@ -108,7 +120,7 @@ export const useDomino: (
 
             setBoardPieces(newBoardPieces);
         },
-        [boardPieces, removePieceFromAgent]
+        [boardPieces, removePieceFromPlayer]
     );
 
     const value = useMemo(
