@@ -4,7 +4,7 @@ import {
     SearchAlgorithmProps,
     SearchAlgorithmResponse,
 } from './models/Algorithm';
-import { Piece } from './models/Types';
+import { Location, Piece } from './models/Types';
 
 export const useGreedySearch: (
     props: SearchAlgorithmProps
@@ -18,8 +18,14 @@ export const useGreedySearch: (
         );
     };
 
-    const verifyPossibilities = (): Array<Piece> => {
-        const possibilities: Array<Piece> = [];
+    const verifyPossibilities = (): Array<{
+        piece: Piece;
+        location: Location;
+    }> => {
+        const possibilities: Array<{
+            piece: Piece;
+            location: Location;
+        }> = [];
 
         const [startPiece, endPiece] = [
             boardPieces[0],
@@ -27,11 +33,16 @@ export const useGreedySearch: (
         ];
 
         agent.pieces.forEach((piece) => {
-            if (
-                verifyMatch(piece, startPiece) ||
-                verifyMatch(piece, endPiece)
-            ) {
-                possibilities.push(piece);
+            if (verifyMatch(piece, startPiece)) {
+                possibilities.push({
+                    piece,
+                    location: 'start',
+                });
+            } else if (verifyMatch(piece, endPiece)) {
+                possibilities.push({
+                    piece,
+                    location: 'end',
+                });
             }
         });
 
@@ -46,8 +57,8 @@ export const useGreedySearch: (
         }
 
         return {
-            piece: possibilities[0],
-            location: 'end',
+            piece: possibilities[0].piece,
+            location: possibilities[0].location,
             who: agent,
         };
     };
