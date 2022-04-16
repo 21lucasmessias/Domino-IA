@@ -22,8 +22,15 @@ export interface SearchAlgorithm {
 }
 
 function App() {
-    const { deck, player, agent, boardPieces, placePiece, start } =
-        useDomino(useMonetaryPieces);
+    const {
+        deck,
+        player,
+        agent,
+        boardPieces,
+        placePiece,
+        start,
+        getStartingPlayer,
+    } = useDomino(useMonetaryPieces);
 
     const { execute } = useGreedySearch({ agent, boardPieces, placePiece });
 

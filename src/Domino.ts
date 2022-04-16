@@ -12,15 +12,17 @@ interface DominoGame {
     player: Player;
     agent: Player;
     boardPieces: Piece[];
+
     placePiece: (piece: Piece, location: Location, who: Player) => void;
     start: () => void;
+    getStartingPlayer: (pieces: Array<Piece>) => string;
 }
 
 export const useDomino: (
     dominoVariation: () => DominoVariation
 ) => DominoGame = (dominoVariation) => {
     const { pieces, initialQtyOfPieces } = dominoVariation();
-
+    const shift = undefined;
     const [deck, setDeck] = useState<Array<Piece>>([]);
 
     const [agent, setAgent] = useState<Player>({
@@ -123,6 +125,11 @@ export const useDomino: (
         [boardPieces, removePieceFromPlayer]
     );
 
+    const getStartingPlayer = useCallback((pieces: Array<Piece>) => {
+        console.log(pieces);
+        return 'aaa';
+    }, []);
+
     const value = useMemo(
         () => ({
             deck,
@@ -131,6 +138,7 @@ export const useDomino: (
             boardPieces,
             placePiece,
             start,
+            getStartingPlayer,
         }),
         [deck, player, agent, boardPieces, placePiece, start]
     );
