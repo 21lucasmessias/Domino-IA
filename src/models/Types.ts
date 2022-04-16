@@ -23,5 +23,5 @@ export type Location = 'start' | 'end';
 
 export type Player = {
     pieces: Array<Piece>;
-    score: Number;
+    score: number;
 };

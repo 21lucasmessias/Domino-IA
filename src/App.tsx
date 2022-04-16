@@ -4,6 +4,7 @@ import { Header } from './components/Header';
 import { useDomino } from './Domino';
 import { useGreedySearch } from './GreedySearch';
 import { Location, Piece, Player } from './models/Types';
+import { useMonetaryPieces } from './variations/Monetary';
 
 export interface SearchAlgorithmProps {
     agent: Player;
@@ -21,7 +22,8 @@ export interface SearchAlgorithm {
 }
 
 function App() {
-    const { deck, player, agent, boardPieces, placePiece, start } = useDomino();
+    const { deck, player, agent, boardPieces, placePiece, start } =
+        useDomino(useMonetaryPieces);
 
     const { execute } = useGreedySearch({ agent, boardPieces, placePiece });
 

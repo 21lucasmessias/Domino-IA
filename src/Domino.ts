@@ -1,40 +1,25 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { v4 as uuid } from 'uuid';
-import { Piece, Player, Value } from './models/Types';
+import { useCallback, useMemo, useState } from 'react';
 
-const useMonetaryPieces = () => {
-    const initialQtyOfPieces = 12;
-    const [pieces, setPieces] = useState<Array<Piece>>([]);
+import { Piece, Player } from './models/Types';
 
-    useEffect(() => {
-        const possiblePieces: Array<Value> = [
-            0, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 20, 50, 100, 200,
-        ];
+export interface DominoVariation {
+    pieces: Array<Piece>;
+    initialQtyOfPieces: number;
+}
 
-        const newPieces = [];
+interface DominoGame {
+    deck: Piece[];
+    player: Player;
+    agent: Player;
+    boardPieces: Piece[];
+    placePiece: () => void;
+    start: () => void;
+}
 
-        for (let i = 0; i < possiblePieces.length; i++) {
-            for (let j = 0; j <= i; j++) {
-                const newPiece: Piece = {
-                    id: uuid(),
-                    left: possiblePieces[j],
-                    right: possiblePieces[i],
-                };
-
-                newPieces.push(newPiece);
-            }
-        }
-
-        setPieces(newPieces);
-    }, []);
-
-    const value = useMemo(() => ({ pieces, initialQtyOfPieces }), [pieces]);
-
-    return value;
-};
-
-export const useDomino = () => {
-    const { pieces, initialQtyOfPieces } = useMonetaryPieces();
+export const useDomino: (
+    dominoVariation: () => DominoVariation
+) => DominoGame = (dominoVariation) => {
+    const { pieces, initialQtyOfPieces } = dominoVariation();
 
     const [deck, setDeck] = useState<Array<Piece>>([]);
 
