@@ -251,6 +251,7 @@ export const useDomino: (props: DominoGameProps) => DominoGame = ({
                         status: 'error',
                     });
 
+                    toggleShift();
                     return;
                 }
 
