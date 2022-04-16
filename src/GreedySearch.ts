@@ -3,7 +3,7 @@ import {
     SearchAlgorithm,
     SearchAlgorithmProps,
     SearchAlgorithmResponse,
-} from './App';
+} from './models/Algorithm';
 
 export const useGreedySearch: (
     props: SearchAlgorithmProps

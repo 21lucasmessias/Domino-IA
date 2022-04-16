@@ -2,30 +2,11 @@ import { Flex } from '@chakra-ui/react';
 import { Board } from './components/Board';
 import { Header } from './components/Header';
 import { useDomino } from './Domino';
-import { useGreedySearch } from './GreedySearch';
-import { Location, Piece, Player } from './models/Types';
 import { useMonetaryPieces } from './variations/Monetary';
-
-export interface SearchAlgorithmProps {
-    agent: Player;
-    boardPieces: Array<Piece>;
-}
-
-export type SearchAlgorithmResponse = {
-    piece: Piece;
-    location: Location;
-    who: Player;
-};
-
-export interface SearchAlgorithm {
-    execute: () => SearchAlgorithmResponse;
-}
 
 function App() {
     const { deck, player, agent, boardPieces, placePiece, start } =
         useDomino(useMonetaryPieces);
-
-    const { execute } = useGreedySearch({ agent, boardPieces });
 
     return (
         <Flex
