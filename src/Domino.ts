@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
+import { SearchAlgorithmResponse } from './App';
 import { Location, Piece, Player } from './models/Types';
 
 export interface DominoVariation {
@@ -12,7 +13,7 @@ interface DominoGame {
     player: Player;
     agent: Player;
     boardPieces: Piece[];
-    placePiece: (piece: Piece, location: Location, who: Player) => void;
+    placePiece: (props: SearchAlgorithmResponse) => void;
     start: () => void;
 }
 
@@ -107,7 +108,7 @@ export const useDomino: (
     );
 
     const placePiece = useCallback(
-        (piece: Piece, location: Location, who: Player) => {
+        ({ piece, location, who }) => {
             removePieceFromPlayer(piece, who);
 
             var newBoardPieces = [...boardPieces];

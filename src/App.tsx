@@ -9,12 +9,12 @@ import { useMonetaryPieces } from './variations/Monetary';
 export interface SearchAlgorithmProps {
     agent: Player;
     boardPieces: Array<Piece>;
-    placePiece: (piece: Piece, location: Location) => void;
 }
 
 export type SearchAlgorithmResponse = {
     piece: Piece;
-    where: Location;
+    location: Location;
+    who: Player;
 };
 
 export interface SearchAlgorithm {
@@ -25,7 +25,7 @@ function App() {
     const { deck, player, agent, boardPieces, placePiece, start } =
         useDomino(useMonetaryPieces);
 
-    const { execute } = useGreedySearch({ agent, boardPieces, placePiece });
+    const { execute } = useGreedySearch({ agent, boardPieces });
 
     return (
         <Flex

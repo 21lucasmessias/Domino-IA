@@ -7,7 +7,7 @@ import {
 
 export const useGreedySearch: (
     props: SearchAlgorithmProps
-) => SearchAlgorithm = ({ agent, boardPieces, placePiece }) => {
+) => SearchAlgorithm = ({ agent, boardPieces }) => {
     const execute = (): SearchAlgorithmResponse => {
         return {
             piece: {
@@ -15,7 +15,8 @@ export const useGreedySearch: (
                 left: 0.05,
                 right: 0.1,
             },
-            where: 'end',
+            location: 'end',
+            who: agent,
         };
     };
 
