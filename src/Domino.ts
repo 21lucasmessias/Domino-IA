@@ -1,3 +1,4 @@
+import { useToast } from '@chakra-ui/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import {
@@ -36,6 +37,8 @@ export const useDomino: (props: DominoGameProps) => DominoGame = ({
     useDominoVariation,
     useSearchAlgorithm,
 }) => {
+    const toast = useToast();
+
     const [shift, setShift] = useState<'agent' | 'player' | undefined>(
         undefined
     );
@@ -206,19 +209,52 @@ export const useDomino: (props: DominoGameProps) => DominoGame = ({
         return;
     }, [shift]);
 
+    const buyPiece = useCallback(
+        (player: Player) => {
+            if (deck.length === 0) {
+                return false;
+            }
+
+            const newDeck = [...deck];
+            const newPlayer = { ...player };
+
+            const randomPosition = Math.floor(
+                Math.random() * (newDeck.length - 1)
+            );
+            newPlayer.pieces.push(newDeck[randomPosition]);
+            newDeck.splice(randomPosition, 1);
+
+            setDeck(newDeck);
+            setPlayer(newPlayer);
+
+            return true;
+        },
+        [deck]
+    );
+
     useEffect(() => {
         if (shift === 'agent') {
             var res = execute();
+
             while (!res) {
-                // buy piece retorna nulo caso n tenha mais pra comprar
-                if (!buyresponse) return;
+                const successfullBought = buyPiece(agent);
+                if (!successfullBought) {
+                    toast({
+                        title: 'Compra',
+                        status: 'error',
+                        description: 'Bloqueado',
+                    });
+
+                    return;
+                }
+
                 res = execute();
             }
 
             placePiece(res);
             toggleShift();
         }
-    }, [shift]);
+    }, [shift, buyPiece]);
 
     const value = useMemo(
         () => ({
