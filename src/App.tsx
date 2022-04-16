@@ -10,6 +10,7 @@ function App() {
         deck,
         player,
         agent,
+        shift,
         boardPieces,
         placePiece,
         start,
@@ -19,6 +20,7 @@ function App() {
         useSearchAlgorithm: useGreedySearch,
     });
 
+    console.log(shift);
     return (
         <Flex
             w="100%"
