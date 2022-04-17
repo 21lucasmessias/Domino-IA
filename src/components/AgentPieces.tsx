@@ -13,7 +13,7 @@ export function AgentPieces({ player, canPlay }: AgentPiecesProps) {
     return (
         <Flex w="100%" direction={'column'} gap={2}>
             <Text color="white" textAlign={'center'}>
-                Agente
+                Máquina
             </Text>
             <Flex w="100%" justifyContent="center" gap={4}>
                 {player.pieces.map((piece) => (
@@ -50,7 +50,7 @@ export function AgentPieces({ player, canPlay }: AgentPiecesProps) {
                 ))}
             </Flex>
             <Text textAlign={'center'} color="white">
-                Score: {player.score}
+                Pontuação: {player.score}
             </Text>
         </Flex>
     );

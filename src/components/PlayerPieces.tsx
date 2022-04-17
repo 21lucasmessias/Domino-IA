@@ -25,7 +25,7 @@ export function PlayerPieces({
     return (
         <Flex w="100%" direction={'column'} gap={2}>
             <Text color="white" textAlign={'center'}>
-                Player
+                Jogador
             </Text>
             <Flex w="100%" justifyContent="center" gap={4}>
                 {possiblePieces.map((piece) => (
@@ -92,7 +92,7 @@ export function PlayerPieces({
             </Flex>
 
             <Text textAlign={'center'} color="white">
-                Score: {player.score}
+                Pontuação: {player.score}
             </Text>
         </Flex>
     );
