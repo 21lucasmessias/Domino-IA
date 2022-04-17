@@ -2,7 +2,7 @@ import { ChosenPiece, Piece, Player } from './Types';
 
 export interface SearchAlgorithmProps {
     agent: Player;
-    boardPieces: () => Piece[];
+    boardPieces: Piece[];
 }
 
 export type SearchAlgorithmResponse = {

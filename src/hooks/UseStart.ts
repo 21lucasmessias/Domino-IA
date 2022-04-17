@@ -5,9 +5,9 @@ import { Piece, Player } from '../models/Types';
 
 interface StartProps {
     useDominoVariation: () => DominoVariation;
-    setDeck: React.Dispatch<React.SetStateAction<Array<Piece>>>;
+    setDeck: (newValue: Piece[]) => Piece[];
     setPlayer: React.Dispatch<React.SetStateAction<Player>>;
-    setAgent: React.Dispatch<React.SetStateAction<Player>>;
+    setAgent: (newValue: Player) => Player;
     setBoardPieces: (newValue: Piece[]) => Piece[];
     setShift: React.Dispatch<
         React.SetStateAction<'agent' | 'player' | undefined>
@@ -212,28 +212,6 @@ export function useStart({
         setAgent(newAgent);
         setBoardPieces(newBoardPieces);
         setShift(shift);
-
-        /* if (shift === 'agent') {
-            var res = execute();
-
-            while (!res) {
-                const successfullBought = buyPiece(agent);
-                if (!successfullBought) {
-                    toast({
-                        title: 'Bloqueado',
-                        status: 'error',
-                    });
-
-                    toggleShift();
-                    return;
-                }
-
-                res = execute();
-            }
-
-            placePiece(res);
-            toggleShift();
-        }*/
     }, [distributePieces, getStartingPlayer, placeFirstPiece]);
 
     const value = useMemo(

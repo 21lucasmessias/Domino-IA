@@ -1,4 +1,4 @@
-import { Flex } from '@chakra-ui/react';
+import { Flex, useToast } from '@chakra-ui/react';
 import { Header } from './components/Header';
 import { useDomino } from './hooks/UseDomino';
 import { useMonetaryPieces } from './variations/Monetary';
@@ -6,6 +6,8 @@ import { useGreedySearch } from './hooks/UseGreedySearch';
 import { Game } from './components/Game';
 
 function App() {
+    const toast = useToast();
+
     const {
         deck,
         player,
@@ -15,13 +17,22 @@ function App() {
         placePiece,
         start,
         buyPiece,
+        toggleShift,
     } = useDomino({
         useDominoVariation: useMonetaryPieces,
         useSearchAlgorithm: useGreedySearch,
     });
 
     const handleBuy = () => {
-        buyPiece(player);
+        if (!buyPiece(player)) {
+            toast({
+                title: 'Bloqueado',
+                status: 'error',
+                position: 'bottom',
+            });
+
+            toggleShift();
+        }
     };
 
     return (
@@ -44,7 +55,7 @@ function App() {
                 <Header start={start} buyPiece={handleBuy} />
                 <Game
                     agent={agent}
-                    boardPieces={boardPieces()}
+                    boardPieces={boardPieces}
                     player={player}
                     placePiece={placePiece}
                     shift={shift}

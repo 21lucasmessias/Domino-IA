@@ -12,13 +12,13 @@ export const useGreedySearch: (
     const verifyPossibilities = (): Array<ChosenPiece> => {
         const newPossiblePieces: Array<Piece> = [];
 
-        if (boardPieces().length === 0) {
+        if (boardPieces.length === 0) {
             return [];
         }
 
         var [startPiece, endPiece] = [
-            boardPieces()[0],
-            boardPieces()[boardPieces().length - 1],
+            boardPieces[0],
+            boardPieces[boardPieces.length - 1],
         ];
 
         if (startPiece.rotated) {
@@ -100,8 +100,6 @@ export const useGreedySearch: (
 
     const execute = (): SearchAlgorithmResponse | null => {
         const possibilities = verifyPossibilities();
-
-        console.log({ possibilities });
 
         if (possibilities.length === 0) {
             return null;
