@@ -9,6 +9,7 @@ interface PlayerPiecesProps {
     handlePlacePiece: (chosenPiece: Piece) => void;
     canPlay: boolean;
     buyPiece: () => void;
+    endOfMatch: boolean;
 }
 
 export function PlayerPieces({
@@ -17,6 +18,7 @@ export function PlayerPieces({
     handlePlacePiece,
     canPlay,
     buyPiece,
+    endOfMatch,
 }: PlayerPiecesProps) {
     const unplayablePieces = useMemo(() => {
         return player.pieces.filter(
@@ -43,6 +45,7 @@ export function PlayerPieces({
                     onClick={buyPiece}
                     maxW="100px"
                     alignSelf={'center'}
+                    disabled={endOfMatch}
                 >
                     Comprar
                 </Button>

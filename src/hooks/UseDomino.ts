@@ -7,7 +7,6 @@ import {
     SearchAlgorithmResponse,
 } from '../models/Algorithm';
 import { Piece, Player, Value } from '../models/Types';
-import { delay } from '../utils/delay';
 import { useStart } from './UseStart';
 import useSyncState from './UseSyncState';
 
@@ -27,6 +26,8 @@ interface DominoGame {
     agent: Player;
     boardPieces: Piece[];
     shift: string | undefined;
+    endOfMatch: boolean;
+    endOfGame: boolean;
     placePiece: (props: SearchAlgorithmResponse) => void;
     start: (agent?: Player, player?: Player) => void;
     buyPiece: (who: Player) => boolean;
@@ -38,6 +39,10 @@ export function useDomino({
     useSearchAlgorithm,
 }: DominoGameProps): DominoGame {
     const toast = useToast();
+
+    const [countGames, setCountGames] = useState(0);
+    const [endOfMatch, setEndOfMatch] = useState(false);
+    const [endOfGame, setEndOfGame] = useState(false);
 
     const [shift, setShift] = useState<'agent' | 'player' | undefined>(
         undefined
@@ -71,6 +76,9 @@ export function useDomino({
         setBoardPieces,
         setShift,
         setPiecesThatPlayerDontHave,
+        setCountGames,
+        setEndOfMatch,
+        setEndOfGame,
     });
 
     const { execute } = useSearchAlgorithm({
@@ -112,24 +120,6 @@ export function useDomino({
         setAgent(agent);
         setPlayer(player);
     };
-
-    useEffect(() => {
-        if (countDeadline >= 2) {
-            setCountDeadline(0);
-            toast({
-                title: 'Empate',
-                status: 'warning',
-                position: 'top-end',
-                isClosable: true,
-            });
-            var newAgent = agent();
-            var newPlayer = player;
-
-            setPlayersScores(newAgent, newPlayer);
-        }
-    }, [countDeadline]);
-
-    console.log(piecesThatPlayerDontHave());
 
     const buyPiece = (who: Player): boolean => {
         if (who.id === player.id) {
@@ -180,6 +170,7 @@ export function useDomino({
             if (buyPiece(agent())) {
                 handleExecute();
             } else {
+                toast.closeAll();
                 toast({
                     title: 'Bloqueado',
                     status: 'error',
@@ -192,12 +183,6 @@ export function useDomino({
             placePiece(searchAlgorithmResponse);
         }
     };
-
-    useEffect(() => {
-        if (shift === 'agent') {
-            handleExecute();
-        }
-    }, [shift]);
 
     const toggleShift = () => {
         if (shift === 'agent') {
@@ -230,8 +215,103 @@ export function useDomino({
             setBoardPieces(newBoardPieces);
         }
 
-        toggleShift();
+        setCountDeadline(0);
+
+        if (newWho.pieces.length != 0) {
+            toggleShift();
+        }
     };
+
+    /* Verify if is turn of agent and execute search algorithm */
+    useEffect(() => {
+        if (shift === 'agent') {
+            handleExecute();
+        }
+    }, [shift]);
+
+    /* Verify Game Winner */
+    useEffect(() => {
+        if (countGames === 3) {
+            setEndOfGame(true);
+
+            toast.closeAll();
+
+            toast({
+                title: 'Resultado final',
+                description: `Jogador: ${player.score} X Máquina: ${
+                    agent().score
+                }`,
+                status: 'info',
+                position: 'bottom',
+                isClosable: true,
+            });
+
+            if (player.score > agent().score) {
+                toast({
+                    title: 'Você ganhou a partida, parabéns!',
+                    status: 'success',
+                    position: 'top',
+                    isClosable: true,
+                });
+            } else {
+                toast({
+                    title: 'Você perdeu a partida, tente novamente!',
+                    status: 'error',
+                    position: 'top',
+                    isClosable: true,
+                });
+            }
+        }
+    }, [countGames, player, agent]);
+
+    /* Verify Draw */
+    useEffect(() => {
+        if (countDeadline >= 2) {
+            setCountDeadline(0);
+            toast.closeAll();
+            toast({
+                title: 'Empate',
+                status: 'info',
+                position: 'top-end',
+                isClosable: true,
+            });
+            var newAgent = agent();
+            var newPlayer = player;
+
+            setEndOfMatch(true);
+            setPlayersScores(newAgent, newPlayer);
+            setCountGames(countGames + 1);
+        }
+    }, [countDeadline, countGames]);
+
+    /* Verify Match Winner */
+    useEffect(() => {
+        if (boardPieces().length > 0) {
+            if (player.pieces.length === 0) {
+                toast({
+                    title: 'Você ganhou a rodada',
+                    status: 'success',
+                    position: 'top-end',
+                    isClosable: true,
+                });
+
+                setEndOfMatch(true);
+                setCountGames(countGames + 1);
+                setPlayersScores(agent(), player);
+            } else if (agent().pieces.length === 0) {
+                toast({
+                    title: 'Agente ganhou a rodada',
+                    status: 'error',
+                    position: 'top-end',
+                    isClosable: true,
+                });
+
+                setEndOfMatch(true);
+                setCountGames(countGames + 1);
+                setPlayersScores(agent(), player);
+            }
+        }
+    }, [player, agent, boardPieces, countGames]);
 
     const value = useMemo(
         () => ({
@@ -240,6 +320,8 @@ export function useDomino({
             agent: agent(),
             shift,
             boardPieces: boardPieces(),
+            endOfMatch,
+            endOfGame,
             placePiece,
             start,
             buyPiece,

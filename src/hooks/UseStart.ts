@@ -13,6 +13,9 @@ interface StartProps {
         React.SetStateAction<'agent' | 'player' | undefined>
     >;
     setPiecesThatPlayerDontHave: (newValue: Value[]) => Value[];
+    setCountGames: React.Dispatch<React.SetStateAction<number>>;
+    setEndOfMatch: React.Dispatch<React.SetStateAction<boolean>>;
+    setEndOfGame: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface StartResponse {
@@ -27,6 +30,9 @@ export function useStart({
     setBoardPieces,
     setShift,
     setPiecesThatPlayerDontHave,
+    setCountGames,
+    setEndOfMatch,
+    setEndOfGame,
 }: StartProps): StartResponse {
     const { pieces, initialQtyOfPieces } = useDominoVariation();
 
@@ -202,6 +208,7 @@ export function useStart({
                 );
             } else {
                 var { newDeck, newPlayer, newAgent } = distributePieces();
+                setCountGames(0);
             }
 
             var newBoardPieces = [];
@@ -224,6 +231,8 @@ export function useStart({
                 shift = 'agent';
             }
 
+            setEndOfMatch(false);
+            setEndOfGame(false);
             setDeck(newDeck);
             setPlayer(newPlayer);
             setAgent(newAgent);

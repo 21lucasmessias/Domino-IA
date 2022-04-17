@@ -22,6 +22,7 @@ interface GameProps {
     placePiece: (props: SearchAlgorithmResponse) => void;
     shift: string | undefined;
     buyPiece: () => void;
+    endOfMatch: boolean;
 }
 
 export function Game({
@@ -31,6 +32,7 @@ export function Game({
     placePiece,
     shift,
     buyPiece,
+    endOfMatch,
 }: GameProps) {
     const [chosenPieces, setChosenPieces] = useState<Array<ChosenPiece>>([]);
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -201,8 +203,9 @@ export function Game({
                 possiblePieces={possiblePieces}
                 player={player}
                 handlePlacePiece={handlePlaceClick}
-                canPlay={shift === 'player'}
+                canPlay={shift === 'player' && !endOfMatch}
                 buyPiece={buyPiece}
+                endOfMatch={endOfMatch}
             />
 
             <AlertDialog

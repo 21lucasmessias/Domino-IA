@@ -14,6 +14,8 @@ function App() {
         agent,
         shift,
         boardPieces,
+        endOfMatch,
+        endOfGame,
         placePiece,
         start,
         buyPiece,
@@ -57,6 +59,7 @@ function App() {
                     startAgain={() => {
                         start(agent, player);
                     }}
+                    endOfGame={endOfGame}
                 />
                 <Game
                     buyPiece={handleBuy}
@@ -65,6 +68,7 @@ function App() {
                     player={player}
                     placePiece={placePiece}
                     shift={shift}
+                    endOfMatch={endOfMatch}
                 />
             </Flex>
         </Flex>
