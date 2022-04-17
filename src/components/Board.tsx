@@ -15,14 +15,13 @@ export function Board({ pieces }: BoardProps) {
             alignItems={'center'}
             gap={4}
         >
-            <Flex w="100%" justifyContent="center" gap={4}>
+            <Flex w="100%" gap={4} overflowX="auto" py={4}>
                 {pieces.map((piece) => (
                     <Flex
                         key={piece.id}
                         backgroundColor="white"
                         gap={1}
-                        p={1}
-                        w="140px"
+                        minW="160px"
                         h={'100px'}
                         alignItems="center"
                         borderRadius={'2xl'}

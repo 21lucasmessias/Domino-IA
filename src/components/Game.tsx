@@ -21,6 +21,7 @@ interface GameProps {
     boardPieces: Array<Piece>;
     placePiece: (props: SearchAlgorithmResponse) => void;
     shift: string | undefined;
+    buyPiece: () => void;
 }
 
 export function Game({
@@ -29,6 +30,7 @@ export function Game({
     boardPieces,
     placePiece,
     shift,
+    buyPiece,
 }: GameProps) {
     const [chosenPieces, setChosenPieces] = useState<Array<ChosenPiece>>([]);
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -184,7 +186,15 @@ export function Game({
     };
 
     return (
-        <Flex w="100%" direction={'column'} h="calc(100vh - 170px)">
+        <Flex
+            w="100%"
+            direction={'column'}
+            h="calc(100vh - 170px)"
+            border="4px solid"
+            borderRadius={'2xl'}
+            borderColor="blackAlpha.400"
+            p={4}
+        >
             <AgentPieces player={agent} canPlay={shift === 'agent'} />
             <Board pieces={boardPieces} />
             <PlayerPieces
@@ -192,6 +202,7 @@ export function Game({
                 player={player}
                 handlePlacePiece={handlePlaceClick}
                 canPlay={shift === 'player'}
+                buyPiece={buyPiece}
             />
 
             <AlertDialog

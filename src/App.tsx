@@ -40,7 +40,7 @@ function App() {
             w="100%"
             h="100vh"
             direction={'column'}
-            backgroundColor="#181A1B"
+            backgroundColor="blue.800"
             overflow="hidden"
         >
             <Flex
@@ -54,12 +54,12 @@ function App() {
             >
                 <Header
                     start={start}
-                    buyPiece={handleBuy}
                     startAgain={() => {
                         start(agent, player);
                     }}
                 />
                 <Game
+                    buyPiece={handleBuy}
                     agent={agent}
                     boardPieces={boardPieces}
                     player={player}
