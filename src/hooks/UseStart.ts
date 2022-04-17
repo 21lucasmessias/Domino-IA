@@ -15,7 +15,7 @@ interface StartProps {
 }
 
 interface StartResponse {
-    start: () => void;
+    start: (agent?: Player, player?: Player) => void;
 }
 
 export function useStart({
@@ -28,46 +28,52 @@ export function useStart({
 }: StartProps): StartResponse {
     const { pieces, initialQtyOfPieces } = useDominoVariation();
 
-    const distributePieces = useCallback((): {
-        newDeck: Piece[];
-        newPlayer: Player;
-        newAgent: Player;
-    } => {
-        const newDeck = [...pieces];
+    const distributePieces = useCallback(
+        (
+            agent?: Player,
+            player?: Player
+        ): {
+            newDeck: Piece[];
+            newPlayer: Player;
+            newAgent: Player;
+        } => {
+            const newDeck = [...pieces];
 
-        const newPlayer: Player = {
-            id: uuid(),
-            pieces: [],
-            score: 0,
-        };
-        const newAgent: Player = {
-            id: uuid(),
-            pieces: [],
-            score: 0,
-        };
+            const newPlayer: Player = {
+                id: player ? player.id : uuid(),
+                pieces: [],
+                score: player ? player.score : 0,
+            };
+            const newAgent: Player = {
+                id: agent ? agent.id : uuid(),
+                pieces: [],
+                score: agent ? agent.score : 0,
+            };
 
-        for (let i = 0; i < initialQtyOfPieces; i++) {
-            const randomPosition = Math.floor(
-                Math.random() * (newDeck.length - 1)
-            );
-            newPlayer.pieces.push(newDeck[randomPosition]);
-            newDeck.splice(randomPosition, 1);
-        }
+            for (let i = 0; i < initialQtyOfPieces; i++) {
+                const randomPosition = Math.floor(
+                    Math.random() * (newDeck.length - 1)
+                );
+                newPlayer.pieces.push(newDeck[randomPosition]);
+                newDeck.splice(randomPosition, 1);
+            }
 
-        for (let i = 0; i < initialQtyOfPieces; i++) {
-            const randomPosition = Math.floor(
-                Math.random() * (newDeck.length - 1)
-            );
-            newAgent.pieces.push(newDeck[randomPosition]);
-            newDeck.splice(randomPosition, 1);
-        }
+            for (let i = 0; i < initialQtyOfPieces; i++) {
+                const randomPosition = Math.floor(
+                    Math.random() * (newDeck.length - 1)
+                );
+                newAgent.pieces.push(newDeck[randomPosition]);
+                newDeck.splice(randomPosition, 1);
+            }
 
-        return {
-            newDeck,
-            newPlayer,
-            newAgent,
-        };
-    }, [pieces, initialQtyOfPieces]);
+            return {
+                newDeck,
+                newPlayer,
+                newAgent,
+            };
+        },
+        [pieces, initialQtyOfPieces]
+    );
 
     const getStartingPlayer = useCallback(
         (agentPieces: Array<Piece>, playerPieces: Array<Piece>) => {
@@ -185,34 +191,45 @@ export function useStart({
         };
     }, []);
 
-    const start = useCallback(() => {
-        var { newDeck, newPlayer, newAgent } = distributePieces();
-        var newBoardPieces = [];
-        var shift: 'agent' | 'player' = 'player';
+    const start = useCallback(
+        (agent?: Player, player?: Player) => {
+            if (agent && player) {
+                var { newDeck, newPlayer, newAgent } = distributePieces(
+                    agent,
+                    player
+                );
+            } else {
+                var { newDeck, newPlayer, newAgent } = distributePieces();
+            }
 
-        const { piece, startingPlayer } = getStartingPlayer(
-            newAgent.pieces,
-            newPlayer.pieces
-        );
+            var newBoardPieces = [];
+            var shift: 'agent' | 'player' = 'player';
 
-        if (startingPlayer === 'agent') {
-            const { newWho, newBoard } = placeFirstPiece(piece, newAgent);
-            newAgent = newWho;
-            newBoardPieces = newBoard;
-            shift = 'player';
-        } else {
-            const { newWho, newBoard } = placeFirstPiece(piece, newPlayer);
-            newPlayer = newWho;
-            newBoardPieces = newBoard;
-            shift = 'agent';
-        }
+            const { piece, startingPlayer } = getStartingPlayer(
+                newAgent.pieces,
+                newPlayer.pieces
+            );
 
-        setDeck(newDeck);
-        setPlayer(newPlayer);
-        setAgent(newAgent);
-        setBoardPieces(newBoardPieces);
-        setShift(shift);
-    }, [distributePieces, getStartingPlayer, placeFirstPiece]);
+            if (startingPlayer === 'agent') {
+                const { newWho, newBoard } = placeFirstPiece(piece, newAgent);
+                newAgent = newWho;
+                newBoardPieces = newBoard;
+                shift = 'player';
+            } else {
+                const { newWho, newBoard } = placeFirstPiece(piece, newPlayer);
+                newPlayer = newWho;
+                newBoardPieces = newBoard;
+                shift = 'agent';
+            }
+
+            setDeck(newDeck);
+            setPlayer(newPlayer);
+            setAgent(newAgent);
+            setBoardPieces(newBoardPieces);
+            setShift(shift);
+        },
+        [distributePieces, getStartingPlayer, placeFirstPiece]
+    );
 
     const value = useMemo(
         () => ({

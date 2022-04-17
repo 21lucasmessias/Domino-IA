@@ -28,7 +28,7 @@ interface DominoGame {
     boardPieces: Piece[];
     shift: string | undefined;
     placePiece: (props: SearchAlgorithmResponse) => void;
-    start: () => void;
+    start: (agent?: Player, player?: Player) => void;
     buyPiece: (who: Player) => boolean;
     toggleShift: () => void;
 }
@@ -85,6 +85,30 @@ export function useDomino({
         return newPlayer;
     };
 
+    const setPlayersScores = (agent: Player, player: Player) => {
+        var agentPiecesCounter = 0;
+        var playerPiecesCounter = 0;
+        var currentPieceValue = 0;
+        agent.pieces.forEach((piece) => {
+            currentPieceValue = piece.left + piece.right;
+            agentPiecesCounter += currentPieceValue;
+        });
+
+        player.pieces.forEach((piece) => {
+            currentPieceValue = piece.left + piece.right;
+            playerPiecesCounter += currentPieceValue;
+        });
+
+        if (agentPiecesCounter < playerPiecesCounter) {
+            agent.score = agent.score + playerPiecesCounter;
+        } else {
+            player.score = player.score + agentPiecesCounter;
+        }
+
+        setAgent(agent);
+        setPlayer(player);
+    };
+
     useEffect(() => {
         if (countDeadline >= 2) {
             setCountDeadline(0);
@@ -94,6 +118,10 @@ export function useDomino({
                 position: 'top-end',
                 isClosable: true,
             });
+            var newAgent = agent();
+            var newPlayer = player;
+
+            setPlayersScores(newAgent, newPlayer);
         }
     }, [countDeadline]);
 

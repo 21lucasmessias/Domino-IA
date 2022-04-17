@@ -52,7 +52,13 @@ function App() {
                 overflow="hidden"
                 w="100%"
             >
-                <Header start={start} buyPiece={handleBuy} />
+                <Header
+                    start={start}
+                    buyPiece={handleBuy}
+                    startAgain={() => {
+                        start(agent, player);
+                    }}
+                />
                 <Game
                     agent={agent}
                     boardPieces={boardPieces}
