@@ -4,55 +4,104 @@ import {
     SearchAlgorithmProps,
     SearchAlgorithmResponse,
 } from '../models/Algorithm';
-import { Location, Piece } from '../models/Types';
+import { ChosenPiece, Piece } from '../models/Types';
 
 export const useGreedySearch: (
     props: SearchAlgorithmProps
 ) => SearchAlgorithm = ({ agent, boardPieces }) => {
-    const verifyMatch = (firstPiece: Piece, secondPiece: Piece): boolean => {
-        return (
-            firstPiece.left === secondPiece.left ||
-            firstPiece.left === secondPiece.right ||
-            firstPiece.right === secondPiece.left ||
-            firstPiece.right === secondPiece.right
-        );
-    };
+    const verifyPossibilities = (): Array<ChosenPiece> => {
+        const newPossiblePieces: Array<Piece> = [];
 
-    const verifyPossibilities = (): Array<{
-        piece: Piece;
-        location: Location;
-    }> => {
-        const possibilities: Array<{
-            piece: Piece;
-            location: Location;
-        }> = [];
+        if (boardPieces().length === 0) {
+            return [];
+        }
 
-        const [startPiece, endPiece] = [
-            boardPieces[0],
-            boardPieces[boardPieces.length - 1],
+        var [startPiece, endPiece] = [
+            boardPieces()[0],
+            boardPieces()[boardPieces().length - 1],
         ];
 
+        if (startPiece.rotated) {
+            startPiece = {
+                ...startPiece,
+                left: startPiece.right,
+                right: startPiece.left,
+            };
+        }
+
+        if (endPiece.rotated) {
+            endPiece = {
+                ...endPiece,
+                left: endPiece.right,
+                right: endPiece.left,
+            };
+        }
+
         agent.pieces.forEach((piece) => {
-            if (verifyMatch(piece, startPiece)) {
-                possibilities.push({
-                    piece,
+            if (
+                startPiece.left === piece.left ||
+                startPiece.left === piece.right
+            ) {
+                newPossiblePieces.push(piece);
+            } else if (
+                endPiece.right === piece.left ||
+                endPiece.right === piece.right
+            ) {
+                newPossiblePieces.push(piece);
+            }
+        });
+
+        const newChosenPieces: Array<ChosenPiece> = [];
+
+        newPossiblePieces.forEach((piece) => {
+            if (startPiece.left === piece.right) {
+                newChosenPieces.push({
+                    piece: {
+                        ...piece,
+                        rotated: false,
+                    },
                     location: 'start',
                 });
             }
 
-            if (verifyMatch(piece, endPiece)) {
-                possibilities.push({
-                    piece,
+            if (startPiece.left === piece.left) {
+                newChosenPieces.push({
+                    piece: {
+                        ...piece,
+                        rotated: true,
+                    },
+                    location: 'start',
+                });
+            }
+
+            if (endPiece.right === piece.left) {
+                newChosenPieces.push({
+                    piece: {
+                        ...piece,
+                        rotated: false,
+                    },
+                    location: 'end',
+                });
+            }
+
+            if (endPiece.right === piece.right) {
+                newChosenPieces.push({
+                    piece: {
+                        ...piece,
+                        rotated: true,
+                    },
                     location: 'end',
                 });
             }
         });
 
-        return possibilities;
+        return newChosenPieces;
     };
 
     const execute = (): SearchAlgorithmResponse | null => {
         const possibilities = verifyPossibilities();
+
+        console.log({ possibilities });
 
         if (possibilities.length === 0) {
             return null;

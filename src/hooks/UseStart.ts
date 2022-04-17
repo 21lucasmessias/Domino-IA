@@ -8,7 +8,7 @@ interface StartProps {
     setDeck: React.Dispatch<React.SetStateAction<Array<Piece>>>;
     setPlayer: React.Dispatch<React.SetStateAction<Player>>;
     setAgent: React.Dispatch<React.SetStateAction<Player>>;
-    setBoardPieces: React.Dispatch<React.SetStateAction<Array<Piece>>>;
+    setBoardPieces: (newValue: Piece[]) => Piece[];
     setShift: React.Dispatch<
         React.SetStateAction<'agent' | 'player' | undefined>
     >;

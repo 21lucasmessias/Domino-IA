@@ -44,7 +44,7 @@ function App() {
                 <Header start={start} buyPiece={handleBuy} />
                 <Game
                     agent={agent}
-                    boardPieces={boardPieces}
+                    boardPieces={boardPieces()}
                     player={player}
                     placePiece={placePiece}
                     shift={shift}

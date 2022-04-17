@@ -1,5 +1,5 @@
 import { useToast } from '@chakra-ui/react';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { v4 as uuid } from 'uuid';
 import {
     SearchAlgorithm,
@@ -8,6 +8,7 @@ import {
 } from '../models/Algorithm';
 import { Piece, Player } from '../models/Types';
 import { useStart } from './UseStart';
+import useSyncState from './UseSyncState';
 
 export interface DominoVariation {
     pieces: Array<Piece>;
@@ -23,7 +24,7 @@ interface DominoGame {
     deck: Piece[];
     player: Player;
     agent: Player;
-    boardPieces: Piece[];
+    boardPieces: () => Piece[];
     shift: string | undefined;
     placePiece: (props: SearchAlgorithmResponse) => void;
     start: () => void;
@@ -52,7 +53,9 @@ export function useDomino({
         score: 0,
     });
 
-    const [boardPieces, setBoardPieces] = useState<Array<Piece>>([]);
+    const { get: boardPieces, set: setBoardPieces } = useSyncState<
+        Array<Piece>
+    >([]);
 
     const { start } = useStart({
         useDominoVariation,
@@ -65,7 +68,7 @@ export function useDomino({
 
     const { execute } = useSearchAlgorithm({ agent, boardPieces });
 
-    const removePieceFromPlayer = useCallback((piece: Piece, who: Player) => {
+    const removePieceFromPlayer = (piece: Piece, who: Player) => {
         const newPlayer = { ...who };
 
         newPlayer.pieces = newPlayer.pieces.filter(
@@ -73,73 +76,68 @@ export function useDomino({
         );
 
         return newPlayer;
-    }, []);
+    };
 
-    const placePiece = useCallback(
-        (props: SearchAlgorithmResponse) => {
-            if (!props) return;
-
-            const { chosenPiece, who } = props;
-
-            const newWho = removePieceFromPlayer(chosenPiece.piece, who);
-
-            var newBoardPieces = [...boardPieces];
-
-            if (chosenPiece.location === 'start') {
-                newBoardPieces = [chosenPiece.piece, ...newBoardPieces];
-            } else {
-                newBoardPieces = [...newBoardPieces, chosenPiece.piece];
-            }
-
-            if (newWho.id === player.id) {
-                setPlayer(newWho);
-                setBoardPieces(newBoardPieces);
-            } else {
-                setAgent(newWho);
-                setBoardPieces(newBoardPieces);
-            }
-        },
-        [boardPieces, removePieceFromPlayer]
-    );
-
-    const toggleShift = useCallback(() => {
+    const toggleShift = () => {
         if (shift === 'agent') {
             setShift('player');
         } else {
             setShift('agent');
+            console.log(execute());
         }
-    }, [shift]);
+    };
 
-    const buyPiece = useCallback(
-        (who: Player): boolean => {
-            if (deck.length === 0) {
-                return false;
-            }
+    const placePiece = async (props: SearchAlgorithmResponse) => {
+        if (!props) return;
 
-            const newDeck = [...deck];
-            const randomPosition = Math.floor(
-                Math.random() * (newDeck.length - 1)
-            );
+        const { chosenPiece, who } = props;
 
-            if (who.id === player.id) {
-                const newPlayer = { ...who };
-                newPlayer.pieces.push(newDeck[randomPosition]);
-                newDeck.splice(randomPosition, 1);
+        const newWho = removePieceFromPlayer(chosenPiece.piece, who);
 
-                setPlayer(newPlayer);
-                setDeck(newDeck);
-            } else {
-                const newAgent = { ...who };
-                newAgent.pieces.push(newDeck[randomPosition]);
-                newDeck.splice(randomPosition, 1);
-                setAgent(newAgent);
-                setDeck(newDeck);
-            }
+        var newBoardPieces = [...boardPieces()];
 
-            return true;
-        },
-        [deck]
-    );
+        if (chosenPiece.location === 'start') {
+            newBoardPieces = [chosenPiece.piece, ...newBoardPieces];
+        } else {
+            newBoardPieces = [...newBoardPieces, chosenPiece.piece];
+        }
+
+        if (newWho.id === player.id) {
+            setPlayer(newWho);
+            setBoardPieces(newBoardPieces);
+        } else {
+            setAgent(newWho);
+            setBoardPieces(newBoardPieces);
+        }
+
+        toggleShift();
+    };
+
+    const buyPiece = (who: Player): boolean => {
+        if (deck.length === 0) {
+            return false;
+        }
+
+        const newDeck = [...deck];
+        const randomPosition = Math.floor(Math.random() * (newDeck.length - 1));
+
+        if (who.id === player.id) {
+            const newPlayer = { ...who };
+            newPlayer.pieces.push(newDeck[randomPosition]);
+            newDeck.splice(randomPosition, 1);
+
+            setPlayer(newPlayer);
+            setDeck(newDeck);
+        } else {
+            const newAgent = { ...who };
+            newAgent.pieces.push(newDeck[randomPosition]);
+            newDeck.splice(randomPosition, 1);
+            setAgent(newAgent);
+            setDeck(newDeck);
+        }
+
+        return true;
+    };
 
     const value = useMemo(
         () => ({
