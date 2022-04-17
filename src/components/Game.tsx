@@ -206,7 +206,7 @@ export function Game({
                         </AlertDialogHeader>
 
                         <AlertDialogBody>
-                            Aonde deseja colocar a peça selecionada?
+                            Onde deseja colocar a peça selecionada?
                         </AlertDialogBody>
 
                         <AlertDialogFooter justifyContent={'space-between'}>
