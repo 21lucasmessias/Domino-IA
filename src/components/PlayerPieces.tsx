@@ -1,4 +1,4 @@
-import { Divider, Flex, Image, Text } from '@chakra-ui/react';
+import { Button, Divider, Flex, Image, Text } from '@chakra-ui/react';
 import { useMemo } from 'react';
 import { images } from '../enums/images';
 import { Piece, Player } from '../models/Types';
@@ -8,6 +8,7 @@ interface PlayerPiecesProps {
     player: Player;
     handlePlacePiece: (chosenPiece: Piece) => void;
     canPlay: boolean;
+    buyPiece: () => void;
 }
 
 export function PlayerPieces({
@@ -15,6 +16,7 @@ export function PlayerPieces({
     player,
     handlePlacePiece,
     canPlay,
+    buyPiece,
 }: PlayerPiecesProps) {
     const unplayablePieces = useMemo(() => {
         return player.pieces.filter(
@@ -23,11 +25,36 @@ export function PlayerPieces({
     }, [possiblePieces, player, player.pieces]);
 
     return (
-        <Flex w="100%" direction={'column'} gap={2}>
-            <Text color="white" textAlign={'center'}>
-                Jogador
-            </Text>
-            <Flex w="100%" justifyContent="center" gap={4}>
+        <Flex
+            w="100%"
+            direction={'column'}
+            gap={2}
+            borderTop="2px solid"
+            pt={4}
+            borderColor="blackAlpha.400"
+        >
+            <Flex justifyContent={'space-between'}>
+                <Text color="white">Pontuação: {player.score}</Text>
+                <Text color="white" textAlign={'center'}>
+                    Jogador
+                </Text>
+                <Button
+                    colorScheme={'purple'}
+                    onClick={buyPiece}
+                    maxW="100px"
+                    alignSelf={'center'}
+                >
+                    Comprar
+                </Button>
+            </Flex>
+
+            <Flex
+                w="100%"
+                justifyContent="flex-start"
+                gap={4}
+                overflowX="auto"
+                py={4}
+            >
                 {possiblePieces.map((piece) => (
                     <Flex
                         as={'button'}
@@ -35,7 +62,7 @@ export function PlayerPieces({
                         backgroundColor="white"
                         gap={1}
                         p={1}
-                        w="140px"
+                        minW="160px"
                         h={'100px'}
                         alignItems="center"
                         borderRadius={'2xl'}
@@ -67,12 +94,12 @@ export function PlayerPieces({
                         backgroundColor="white"
                         gap={1}
                         p={1}
-                        w="140px"
+                        minW="160px"
                         h={'100px'}
                         alignItems="center"
                         borderRadius={'2xl'}
                         cursor={'not-allowed'}
-                        opacity={0.4}
+                        opacity={0.5}
                     >
                         <Flex flex={1} justifyContent="center">
                             <Image src={images.get(piece.left)} maxH="90px" />
@@ -90,10 +117,6 @@ export function PlayerPieces({
                     </Flex>
                 ))}
             </Flex>
-
-            <Text textAlign={'center'} color="white">
-                Pontuação: {player.score}
-            </Text>
         </Flex>
     );
 }
