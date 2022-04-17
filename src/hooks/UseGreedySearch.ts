@@ -3,8 +3,8 @@ import {
     SearchAlgorithm,
     SearchAlgorithmProps,
     SearchAlgorithmResponse,
-} from './models/Algorithm';
-import { Location, Piece } from './models/Types';
+} from '../models/Algorithm';
+import { Location, Piece } from '../models/Types';
 
 export const useGreedySearch: (
     props: SearchAlgorithmProps
@@ -57,17 +57,22 @@ export const useGreedySearch: (
         if (possibilities.length === 0) {
             return null;
         }
+
         if (possibilities.length === 1) {
             return {
-                piece: possibilities[0].piece,
-                location: possibilities[0].location,
+                chosenPiece: {
+                    piece: possibilities[0].piece,
+                    location: possibilities[0].location,
+                },
                 who: agent,
             };
         }
 
         return {
-            piece: possibilities[1].piece,
-            location: possibilities[1].location,
+            chosenPiece: {
+                piece: possibilities[1].piece,
+                location: possibilities[1].location,
+            },
             who: agent,
         };
     };

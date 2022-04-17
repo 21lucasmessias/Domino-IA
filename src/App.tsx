@@ -1,11 +1,9 @@
 import { Flex } from '@chakra-ui/react';
 import { Header } from './components/Header';
-import { useDomino } from './Domino';
+import { useDomino } from './hooks/UseDomino';
 import { useMonetaryPieces } from './variations/Monetary';
-import { useGreedySearch } from './GreedySearch';
+import { useGreedySearch } from './hooks/UseGreedySearch';
 import { Game } from './components/Game';
-import { useEffect } from 'react';
-import { delay } from './utils/delay';
 
 function App() {
     const {
@@ -49,6 +47,7 @@ function App() {
                     boardPieces={boardPieces}
                     player={player}
                     placePiece={placePiece}
+                    shift={shift}
                 />
             </Flex>
         </Flex>

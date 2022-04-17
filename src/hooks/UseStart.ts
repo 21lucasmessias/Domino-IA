@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { v4 as uuid } from 'uuid';
-import { DominoVariation } from './Domino';
-import { Piece, Player } from './models/Types';
+import { DominoVariation } from './UseDomino';
+import { Piece, Player } from '../models/Types';
 
 interface StartProps {
     useDominoVariation: () => DominoVariation;

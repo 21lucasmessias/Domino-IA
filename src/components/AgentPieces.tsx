@@ -4,9 +4,10 @@ import { Player } from '../models/Types';
 
 interface AgentPiecesProps {
     player: Player;
+    canPlay: boolean;
 }
 
-export function AgentPieces({ player }: AgentPiecesProps) {
+export function AgentPieces({ player, canPlay }: AgentPiecesProps) {
     return (
         <Flex w="100%" direction={'column'} gap={2}>
             <Text color="white" textAlign={'center'}>
@@ -23,6 +24,7 @@ export function AgentPieces({ player }: AgentPiecesProps) {
                         h={'100px'}
                         alignItems="center"
                         borderRadius={'2xl'}
+                        opacity={canPlay ? 1 : 0.4}
                     >
                         <Flex flex={1} justifyContent="center">
                             <Image src={images.get(piece.left)} maxH="90px" />

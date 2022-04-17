@@ -26,6 +26,9 @@ export function Board({ pieces }: BoardProps) {
                         h={'100px'}
                         alignItems="center"
                         borderRadius={'2xl'}
+                        transform={
+                            piece.rotated ? 'rotate(180deg)' : 'transform(0deg)'
+                        }
                     >
                         <Flex flex={1} justifyContent="center">
                             <Image src={images.get(piece.left)} maxH="90px" />

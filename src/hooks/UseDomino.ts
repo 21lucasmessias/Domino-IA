@@ -5,9 +5,9 @@ import {
     SearchAlgorithm,
     SearchAlgorithmProps,
     SearchAlgorithmResponse,
-} from './models/Algorithm';
-import { Piece, Player } from './models/Types';
-import { useStart } from './Start';
+} from '../models/Algorithm';
+import { Piece, Player } from '../models/Types';
+import { useStart } from './UseStart';
 
 export interface DominoVariation {
     pieces: Array<Piece>;
@@ -76,15 +76,19 @@ export function useDomino({
     }, []);
 
     const placePiece = useCallback(
-        ({ piece, location, who }) => {
-            const newWho = removePieceFromPlayer(piece, who);
+        (props: SearchAlgorithmResponse) => {
+            if (!props) return;
+
+            const { chosenPiece, who } = props;
+
+            const newWho = removePieceFromPlayer(chosenPiece.piece, who);
 
             var newBoardPieces = [...boardPieces];
 
-            if (location === 'start') {
-                newBoardPieces = [piece, ...newBoardPieces];
+            if (chosenPiece.location === 'start') {
+                newBoardPieces = [chosenPiece.piece, ...newBoardPieces];
             } else {
-                newBoardPieces = [...newBoardPieces, piece];
+                newBoardPieces = [...newBoardPieces, chosenPiece.piece];
             }
 
             if (newWho.id === player.id) {

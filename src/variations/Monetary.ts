@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
-import { DominoVariation } from '../Domino';
+import { DominoVariation } from '../hooks/UseDomino';
 import { Piece, Value } from '../models/Types';
 
 export const useMonetaryPieces: () => DominoVariation = () => {
@@ -20,6 +20,7 @@ export const useMonetaryPieces: () => DominoVariation = () => {
                     id: uuid(),
                     left: possiblePieces[j],
                     right: possiblePieces[i],
+                    rotated: false,
                 };
 
                 newPieces.push(newPiece);

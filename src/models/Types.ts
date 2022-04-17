@@ -17,6 +17,7 @@ export type Piece = {
     id: string;
     left: Value;
     right: Value;
+    rotated: boolean;
 };
 
 export type Location = 'start' | 'end';
@@ -25,4 +26,9 @@ export type Player = {
     id: string;
     pieces: Array<Piece>;
     score: number;
+};
+
+export type ChosenPiece = {
+    piece: Piece;
+    location: string;
 };

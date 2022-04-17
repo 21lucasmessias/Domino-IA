@@ -1,4 +1,4 @@
-import { Location, Piece, Player } from './Types';
+import { ChosenPiece, Piece, Player } from './Types';
 
 export interface SearchAlgorithmProps {
     agent: Player;
@@ -6,8 +6,7 @@ export interface SearchAlgorithmProps {
 }
 
 export type SearchAlgorithmResponse = {
-    piece: Piece;
-    location: Location;
+    chosenPiece: ChosenPiece;
     who: Player;
 } | null;
 
