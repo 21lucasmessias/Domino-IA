@@ -48,13 +48,7 @@ export function PlayerPieces({
                 </Button>
             </Flex>
 
-            <Flex
-                w="100%"
-                justifyContent="flex-start"
-                gap={4}
-                overflowX="auto"
-                py={4}
-            >
+            <Flex gap={4} overflowX="auto" py={4} mx="auto" maxW="100%">
                 {possiblePieces.map((piece) => (
                     <Flex
                         as={'button'}

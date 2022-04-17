@@ -15,7 +15,7 @@ export function Board({ pieces }: BoardProps) {
             alignItems={'center'}
             gap={4}
         >
-            <Flex w="100%" gap={4} overflowX="auto" py={4}>
+            <Flex gap={4} overflowX="auto" py={4} mx="auto" maxW="100%">
                 {pieces.map((piece) => (
                     <Flex
                         key={piece.id}
