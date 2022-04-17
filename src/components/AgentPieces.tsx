@@ -7,6 +7,8 @@ interface AgentPiecesProps {
     canPlay: boolean;
 }
 
+const visible = true;
+
 export function AgentPieces({ player, canPlay }: AgentPiecesProps) {
     return (
         <Flex w="100%" direction={'column'} gap={2}>
@@ -27,15 +29,22 @@ export function AgentPieces({ player, canPlay }: AgentPiecesProps) {
                         opacity={canPlay ? 1 : 0.4}
                     >
                         <Flex flex={1} justifyContent="center">
-                            <Image src={images.get(piece.left)} maxH="90px" />
+                            {visible && (
+                                <Image
+                                    src={images.get(piece.left)}
+                                    maxH="90px"
+                                />
+                            )}
                         </Flex>
                         <Divider orientation="vertical" size="2" />
                         <Flex flex={1} justifyContent="center">
-                            <Image
-                                src={images.get(piece.right)}
-                                maxH="90px"
-                                justifySelf={'center'}
-                            />
+                            {visible && (
+                                <Image
+                                    src={images.get(piece.right)}
+                                    maxH="90px"
+                                    justifySelf={'center'}
+                                />
+                            )}
                         </Flex>
                     </Flex>
                 ))}
