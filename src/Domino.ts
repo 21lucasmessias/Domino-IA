@@ -23,14 +23,9 @@ interface DominoGame {
     player: Player;
     agent: Player;
     boardPieces: Piece[];
-    shift: 'agent' | 'player' | undefined;
+    shift: string | undefined;
     placePiece: (props: SearchAlgorithmResponse) => void;
     start: () => void;
-    getStartingPlayer: (
-        agentPieces: Array<Piece>,
-        playerPieces: Array<Piece>
-    ) => 'agent' | 'player';
-    toggleShift: () => void;
 }
 
 export const useDomino: (props: DominoGameProps) => DominoGame = ({
@@ -102,37 +97,48 @@ export const useDomino: (props: DominoGameProps) => DominoGame = ({
     }, [pieces, initialQtyOfPieces]);
 
     const start = useCallback(() => {
-        const { newDeck, newPlayer, newAgent } = distributePieces();
+        var { newDeck, newPlayer, newAgent } = distributePieces();
 
         setDeck(newDeck);
-        setPlayer(newPlayer);
-        setAgent(newAgent);
-        setBoardPieces([]);
 
-        const startingPlayer = getStartingPlayer(
+        const { piece, startingPlayer } = getStartingPlayer(
             newAgent.pieces,
             newPlayer.pieces
         );
-        setShift(startingPlayer);
+
+        if (startingPlayer === 'agent') {
+            newAgent = placeFirstPiece(piece, newAgent);
+        } else {
+            newPlayer = placeFirstPiece(piece, newPlayer);
+        }
+
+        setPlayer(newPlayer);
+        setAgent(newAgent);
     }, [distributePieces]);
 
-    const removePieceFromPlayer = useCallback(
+    const removePieceFromPlayer = useCallback((piece: Piece, who: Player) => {
+        who.pieces = who.pieces.filter(
+            (playerPiece) => playerPiece.id !== piece.id
+        );
+
+        return who;
+    }, []);
+
+    const placeFirstPiece = useCallback(
         (piece: Piece, who: Player) => {
-            if (who.id === player.id) {
-                const newPlayer = { ...player };
-                player.pieces = player.pieces.filter(
-                    (playerPiece) => playerPiece.id !== piece.id
-                );
-                setAgent(newPlayer);
-            } else {
-                const newAgent = { ...agent };
-                agent.pieces = agent.pieces.filter(
-                    (agentPiece) => agentPiece.id !== piece.id
-                );
-                setAgent(newAgent);
-            }
+            who = removePieceFromPlayer(piece, who);
+
+            var newBoardPieces = [...boardPieces];
+            newBoardPieces = [...newBoardPieces, piece];
+
+            setBoardPieces(newBoardPieces);
+
+            setTimeout(() => {
+                console.log(boardPieces);
+            }, 3000);
+            return who;
         },
-        [player, agent]
+        [removePieceFromPlayer]
     );
 
     const placePiece = useCallback(
@@ -154,10 +160,16 @@ export const useDomino: (props: DominoGameProps) => DominoGame = ({
 
     const getStartingPlayer = useCallback(
         (agentPieces: Array<Piece>, playerPieces: Array<Piece>) => {
-            var higherDoubleAgentPiece = { left: -1, right: -1 };
-            var higherDoublePlayerPiece = { left: -1, right: -1 };
-            var higherValueAgentPiece = 0;
-            var higherValuePlayerPiece = 0;
+            var mockPiece = playerPieces[0];
+            mockPiece.left = 0;
+            mockPiece.right = 0;
+
+            var higherDoubleAgentPiece = mockPiece;
+            var higherDoublePlayerPiece = mockPiece;
+            var higherValueAgentPieceNumber = 0;
+            var higherValuePlayerPieceNumber = 0;
+            var higherValueAgentPiece = agentPieces[0];
+            var higherValuePlayerPiece = playerPieces[0];
 
             agentPieces.forEach((piece) => {
                 if (piece.left === piece.right) {
@@ -177,25 +189,41 @@ export const useDomino: (props: DominoGameProps) => DominoGame = ({
                 //se algum player tem carta espelhada
                 if (higherDoubleAgentPiece.left > higherDoublePlayerPiece.left)
                     // se a carta espelhada do agente é maior que a do player
-                    return 'agent';
-                return 'player';
-            } else {
-                //se nenhum tem carta espelhada
-                agentPieces.forEach((piece) => {
-                    var currentPieceValue = piece.left + piece.right;
-                    if (currentPieceValue >= higherValueAgentPiece)
-                        higherValueAgentPiece = currentPieceValue;
-                });
-
-                playerPieces.forEach((piece) => {
-                    var currentPieceValue = piece.left + piece.right;
-                    if (currentPieceValue >= higherValuePlayerPiece)
-                        higherValuePlayerPiece = currentPieceValue;
-                });
-                if (higherValueAgentPiece > higherValuePlayerPiece)
-                    return 'agent';
-                return 'player';
+                    return {
+                        piece: higherDoubleAgentPiece,
+                        startingPlayer: 'agent',
+                    };
+                return {
+                    piece: higherDoublePlayerPiece,
+                    startingPlayer: 'player',
+                };
             }
+            //se nenhum tem carta espelhada
+            agentPieces.forEach((piece) => {
+                var currentPieceValue = piece.left + piece.right;
+                if (currentPieceValue >= higherValueAgentPieceNumber) {
+                    higherValueAgentPiece = piece;
+                    higherValueAgentPieceNumber = currentPieceValue;
+                }
+            });
+            console.log(playerPieces);
+            playerPieces.forEach((piece) => {
+                var currentPieceValue = piece.left + piece.right;
+                console.log(currentPieceValue);
+                if (currentPieceValue >= higherValuePlayerPieceNumber) {
+                    higherValuePlayerPiece = piece;
+                    higherValuePlayerPieceNumber = currentPieceValue;
+                }
+            });
+            if (higherValueAgentPieceNumber > higherValuePlayerPieceNumber)
+                return {
+                    piece: higherValueAgentPiece,
+                    startingPlayer: 'agent',
+                };
+            return {
+                piece: higherValuePlayerPiece,
+                startingPlayer: 'player',
+            };
         },
         []
     );
@@ -274,6 +302,7 @@ export const useDomino: (props: DominoGameProps) => DominoGame = ({
             start,
             getStartingPlayer,
             toggleShift,
+            placeFirstPiece,
         }),
         [
             deck,

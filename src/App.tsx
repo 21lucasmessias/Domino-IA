@@ -6,22 +6,11 @@ import { useGreedySearch } from './GreedySearch';
 import { Game } from './components/Game';
 
 function App() {
-    const {
-        deck,
-        player,
-        agent,
-        shift,
-        boardPieces,
-        placePiece,
-        start,
-        getStartingPlayer,
-        toggleShift,
-    } = useDomino({
-        useDominoVariation: useMonetaryPieces,
-        useSearchAlgorithm: useGreedySearch,
-    });
-
-    console.log({ player, agent, boardPieces });
+    const { deck, player, agent, shift, boardPieces, placePiece, start } =
+        useDomino({
+            useDominoVariation: useMonetaryPieces,
+            useSearchAlgorithm: useGreedySearch,
+        });
 
     return (
         <Flex
