@@ -42,22 +42,24 @@ export function useDomino({
     const [shift, setShift] = useState<'agent' | 'player' | undefined>(
         undefined
     );
+
+    const [countDeadline, setCountDeadline] = useState(0);
+
     const { get: deck, set: setDeck } = useSyncState<Array<Piece>>([]);
     const { get: agent, set: setAgent } = useSyncState<Player>({
         id: uuid(),
         pieces: [],
         score: 0,
     });
+    const { get: boardPieces, set: setBoardPieces } = useSyncState<
+        Array<Piece>
+    >([]);
 
     const [player, setPlayer] = useState<Player>({
         id: uuid(),
         pieces: [],
         score: 0,
     });
-
-    const { get: boardPieces, set: setBoardPieces } = useSyncState<
-        Array<Piece>
-    >([]);
 
     const { start } = useStart({
         useDominoVariation,
@@ -83,8 +85,21 @@ export function useDomino({
         return newPlayer;
     };
 
+    useEffect(() => {
+        if (countDeadline >= 2) {
+            setCountDeadline(0);
+            toast({
+                title: 'Empate',
+                status: 'warning',
+                position: 'top-end',
+                isClosable: true,
+            });
+        }
+    }, [countDeadline]);
+
     const buyPiece = (who: Player): boolean => {
         if (deck().length === 0) {
+            setCountDeadline((oldState) => oldState + 1);
             return false;
         }
 
