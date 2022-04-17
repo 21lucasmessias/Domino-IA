@@ -115,11 +115,25 @@ export const useGreedySearch: (
             };
         }
 
+        var higherValueChosenPiece: ChosenPiece = possibilities[0];
+        var higherValueChosenPieceValue = 0;
+        var currentPieceValue = 0;
+
+        possibilities.map((chosenPiece) => {
+            currentPieceValue =
+                chosenPiece.piece.left + chosenPiece.piece.right;
+
+            higherValueChosenPieceValue =
+                higherValueChosenPiece.piece.right +
+                higherValueChosenPiece.piece.left;
+
+            if (currentPieceValue > higherValueChosenPieceValue) {
+                higherValueChosenPiece = chosenPiece;
+            }
+        });
+
         return {
-            chosenPiece: {
-                piece: possibilities[1].piece,
-                location: possibilities[1].location,
-            },
+            chosenPiece: higherValueChosenPiece,
             who: agent,
         };
     };
