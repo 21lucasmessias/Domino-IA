@@ -1,8 +1,9 @@
-import { ChosenPiece, Piece, Player } from './Types';
+import { ChosenPiece, Piece, Player, Value } from './Types';
 
 export interface SearchAlgorithmProps {
     agent: Player;
     boardPieces: Piece[];
+    piecesThatPlayerDontHave?: Value[];
 }
 
 export type SearchAlgorithmResponse = {

@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { v4 as uuid } from 'uuid';
 import { DominoVariation } from './UseDomino';
-import { Piece, Player } from '../models/Types';
+import { Piece, Player, Value } from '../models/Types';
 
 interface StartProps {
     useDominoVariation: () => DominoVariation;
@@ -12,6 +12,7 @@ interface StartProps {
     setShift: React.Dispatch<
         React.SetStateAction<'agent' | 'player' | undefined>
     >;
+    setPiecesThatPlayerDontHave: (newValue: Value[]) => Value[];
 }
 
 interface StartResponse {
@@ -25,6 +26,7 @@ export function useStart({
     setAgent,
     setBoardPieces,
     setShift,
+    setPiecesThatPlayerDontHave,
 }: StartProps): StartResponse {
     const { pieces, initialQtyOfPieces } = useDominoVariation();
 
@@ -227,6 +229,7 @@ export function useStart({
             setAgent(newAgent);
             setBoardPieces(newBoardPieces);
             setShift(shift);
+            setPiecesThatPlayerDontHave([]);
         },
         [distributePieces, getStartingPlayer, placeFirstPiece]
     );

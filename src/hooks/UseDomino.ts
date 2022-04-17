@@ -6,7 +6,7 @@ import {
     SearchAlgorithmProps,
     SearchAlgorithmResponse,
 } from '../models/Algorithm';
-import { Piece, Player } from '../models/Types';
+import { Piece, Player, Value } from '../models/Types';
 import { delay } from '../utils/delay';
 import { useStart } from './UseStart';
 import useSyncState from './UseSyncState';
@@ -54,6 +54,8 @@ export function useDomino({
     const { get: boardPieces, set: setBoardPieces } = useSyncState<
         Array<Piece>
     >([]);
+    const { get: piecesThatPlayerDontHave, set: setPiecesThatPlayerDontHave } =
+        useSyncState<Array<Value>>([]);
 
     const [player, setPlayer] = useState<Player>({
         id: uuid(),
@@ -68,11 +70,13 @@ export function useDomino({
         setAgent,
         setBoardPieces,
         setShift,
+        setPiecesThatPlayerDontHave,
     });
 
     const { execute } = useSearchAlgorithm({
         agent: agent(),
         boardPieces: boardPieces(),
+        piecesThatPlayerDontHave: piecesThatPlayerDontHave(),
     });
 
     const removePieceFromPlayer = (piece: Piece, who: Player) => {
@@ -125,7 +129,23 @@ export function useDomino({
         }
     }, [countDeadline]);
 
+    console.log(piecesThatPlayerDontHave());
+
     const buyPiece = (who: Player): boolean => {
+        if (who.id === player.id) {
+            const startBoardPiece = boardPieces()[0];
+            const endBoardPiece = boardPieces()[boardPieces().length - 1];
+
+            setPiecesThatPlayerDontHave([
+                startBoardPiece.rotated
+                    ? startBoardPiece.right
+                    : startBoardPiece.left,
+                endBoardPiece.rotated
+                    ? endBoardPiece.left
+                    : endBoardPiece.right,
+            ]);
+        }
+
         if (deck().length === 0) {
             setCountDeadline((oldState) => oldState + 1);
             return false;
