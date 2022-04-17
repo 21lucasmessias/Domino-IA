@@ -1,12 +1,13 @@
 import { Divider, Flex, Image, Text } from '@chakra-ui/react';
 import { images } from '../enums/images';
-import { Player } from '../models/Types';
+import { Piece, Player } from '../models/Types';
 
 interface PlayerPiecesProps {
     player: Player;
+    handlePlacePiece: (piece: Piece) => void;
 }
 
-export function PlayerPieces({ player }: PlayerPiecesProps) {
+export function PlayerPieces({ player, handlePlacePiece }: PlayerPiecesProps) {
     return (
         <Flex w="100%" direction={'column'} gap={2}>
             <Text color="white" textAlign={'center'}>
@@ -15,6 +16,7 @@ export function PlayerPieces({ player }: PlayerPiecesProps) {
             <Flex w="100%" justifyContent="center" gap={4}>
                 {player.pieces.map((piece) => (
                     <Flex
+                        as={'button'}
                         key={piece.id}
                         backgroundColor="white"
                         gap={1}
@@ -23,6 +25,7 @@ export function PlayerPieces({ player }: PlayerPiecesProps) {
                         h={'100px'}
                         alignItems="center"
                         borderRadius={'2xl'}
+                        onClick={() => handlePlacePiece(piece)}
                     >
                         <Flex flex={1} justifyContent="center">
                             <Image src={images.get(piece.left)} maxH="90px" />

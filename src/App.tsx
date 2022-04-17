@@ -4,13 +4,27 @@ import { useDomino } from './Domino';
 import { useMonetaryPieces } from './variations/Monetary';
 import { useGreedySearch } from './GreedySearch';
 import { Game } from './components/Game';
+import { useEffect } from 'react';
+import { delay } from './utils/delay';
 
 function App() {
-    const { deck, player, agent, shift, boardPieces, placePiece, start } =
-        useDomino({
-            useDominoVariation: useMonetaryPieces,
-            useSearchAlgorithm: useGreedySearch,
-        });
+    const {
+        deck,
+        player,
+        agent,
+        shift,
+        boardPieces,
+        placePiece,
+        start,
+        buyPiece,
+    } = useDomino({
+        useDominoVariation: useMonetaryPieces,
+        useSearchAlgorithm: useGreedySearch,
+    });
+
+    const handleBuy = () => {
+        buyPiece(player);
+    };
 
     return (
         <Flex
@@ -29,8 +43,13 @@ function App() {
                 overflow="hidden"
                 w="100%"
             >
-                <Header start={start} />
-                <Game agent={agent} boardPieces={boardPieces} player={player} />
+                <Header start={start} buyPiece={handleBuy} />
+                <Game
+                    agent={agent}
+                    boardPieces={boardPieces}
+                    player={player}
+                    placePiece={placePiece}
+                />
             </Flex>
         </Flex>
     );
