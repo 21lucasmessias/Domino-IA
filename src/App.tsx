@@ -4,6 +4,7 @@ import { useDomino } from './hooks/UseDomino';
 import { useMonetaryPieces } from './variations/Monetary';
 import { useGreedySearch } from './hooks/UseGreedySearch';
 import { Game } from './components/Game';
+import { useAStarSearch } from './hooks/UseAStarSearch';
 
 function App() {
     const toast = useToast();
@@ -22,7 +23,7 @@ function App() {
         toggleShift,
     } = useDomino({
         useDominoVariation: useMonetaryPieces,
-        useSearchAlgorithm: useGreedySearch,
+        useSearchAlgorithm: useAStarSearch,
     });
 
     const handleBuy = () => {

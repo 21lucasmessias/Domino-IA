@@ -85,7 +85,7 @@ export function useDomino({
     const { execute } = useSearchAlgorithm({
         agent: agent(),
         boardPieces: boardPieces(),
-        piecesThatPlayerDontHave: piecesThatPlayerDontHave(),
+        useDominoVariation,
     });
 
     const removePieceFromPlayer = (piece: Piece, who: Player) => {
@@ -98,7 +98,7 @@ export function useDomino({
         return newPlayer;
     };
 
-    const setPlayersScores = (agent: Player, player: Player) => {
+    const updatePlayersScores = (agent: Player, player: Player) => {
         var agentPiecesCounter = 0;
         var playerPiecesCounter = 0;
         var currentPieceValue = 0;
@@ -232,8 +232,9 @@ export function useDomino({
 
     /* Verify Game Winner */
     useEffect(() => {
-        if (countGames === 3) {
+        if (!endOfGame && countGames === 3) {
             setEndOfGame(true);
+            setShift(undefined);
 
             toast.closeAll();
 
@@ -263,7 +264,7 @@ export function useDomino({
                 });
             }
         }
-    }, [countGames, player, agent]);
+    }, [countGames, player, agent, endOfGame]);
 
     /* Verify Draw */
     useEffect(() => {
@@ -280,14 +281,14 @@ export function useDomino({
             var newPlayer = player;
 
             setEndOfMatch(true);
-            setPlayersScores(newAgent, newPlayer);
+            updatePlayersScores(newAgent, newPlayer);
             setCountGames(countGames + 1);
         }
     }, [countDeadline, countGames]);
 
     /* Verify Match Winner */
     useEffect(() => {
-        if (boardPieces().length > 0) {
+        if (!endOfMatch && boardPieces().length > 0) {
             if (player.pieces.length === 0) {
                 toast({
                     title: 'Você ganhou a rodada',
@@ -297,8 +298,9 @@ export function useDomino({
                 });
 
                 setEndOfMatch(true);
-                setCountGames(countGames + 1);
-                setPlayersScores(agent(), player);
+                setCountGames((countGames) => countGames + 1);
+                updatePlayersScores(agent(), player);
+                setShift(undefined);
             } else if (agent().pieces.length === 0) {
                 toast({
                     title: 'Agente ganhou a rodada',
@@ -308,11 +310,12 @@ export function useDomino({
                 });
 
                 setEndOfMatch(true);
-                setCountGames(countGames + 1);
-                setPlayersScores(agent(), player);
+                setCountGames((countGames) => countGames + 1);
+                updatePlayersScores(agent(), player);
+                setShift(undefined);
             }
         }
-    }, [player, agent, boardPieces, countGames]);
+    }, [player, agent, boardPieces, endOfMatch]);
 
     const value = useMemo(
         () => ({
@@ -328,7 +331,7 @@ export function useDomino({
             buyPiece,
             toggleShift,
         }),
-        [deck, player, agent, shift, boardPieces]
+        [deck, player, agent, shift, boardPieces, endOfGame, endOfGame]
     );
 
     return value;

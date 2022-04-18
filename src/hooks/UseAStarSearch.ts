@@ -4,12 +4,17 @@ import {
     SearchAlgorithmProps,
     SearchAlgorithmResponse,
 } from '../models/Algorithm';
-import { ChosenPiece, Piece } from '../models/Types';
+import { ChosenPiece, Piece, Player } from '../models/Types';
 
 export const useAStarSearch: (
     props: SearchAlgorithmProps
-) => SearchAlgorithm = ({ agent, boardPieces, piecesThatPlayerDontHave }) => {
-    const verifyPossibilities = (): Array<ChosenPiece> => {
+) => SearchAlgorithm = ({ agent, boardPieces, useDominoVariation }) => {
+    const { pieces: allVariationPieces } = useDominoVariation();
+
+    const verifyPossibilities = (
+        boardPieces: Array<Piece>,
+        agent: Player
+    ): Array<ChosenPiece> => {
         const newPossiblePieces: Array<Piece> = [];
 
         if (boardPieces.length === 0) {
@@ -118,8 +123,60 @@ export const useAStarSearch: (
         return higherDoubleChosenPiece;
     };
 
+    const recursive = (
+        chosenPiece: ChosenPiece,
+        possibilities: Array<ChosenPiece>,
+        depth: number,
+        boardPieces: Array<Piece>,
+        agent: Player
+    ): { chosenPiece: ChosenPiece; countPossibilities: number } => {
+        if (possibilities.length === 0) {
+            return { chosenPiece, countPossibilities: 0 };
+        }
+
+        if (depth === 3) {
+            return { chosenPiece, countPossibilities: 0 };
+        }
+
+        var possibilitiesCount = -1;
+        var chosenPieceWithMostPossiblesInFuture = possibilities[0];
+
+        possibilities.forEach((chosenPiece) => {
+            const boardWithtouPiece = [...boardPieces, chosenPiece.piece];
+            const agentWithoutPiece = {
+                ...agent,
+                pieces: agent.pieces.filter(
+                    (piece) => piece.id !== chosenPiece.piece.id
+                ),
+            };
+
+            const possibilitiesCurrent = verifyPossibilities(
+                boardWithtouPiece,
+                agentWithoutPiece
+            );
+
+            const result = recursive(
+                chosenPiece,
+                possibilitiesCurrent,
+                depth + 1,
+                boardWithtouPiece,
+                agentWithoutPiece
+            );
+
+            if (result.countPossibilities > possibilitiesCount) {
+                chosenPieceWithMostPossiblesInFuture = chosenPiece;
+                possibilitiesCount = result.countPossibilities;
+            }
+        });
+
+        return {
+            chosenPiece: chosenPieceWithMostPossiblesInFuture,
+            countPossibilities: possibilitiesCount,
+        };
+    };
+
     const execute = (): SearchAlgorithmResponse | null => {
-        const possibilities = verifyPossibilities();
+        const possibilities = verifyPossibilities(boardPieces, agent);
 
         /* buy piece */
         if (possibilities.length === 0) {
@@ -143,29 +200,22 @@ export const useAStarSearch: (
             };
         }
 
+        /*const knowPieces = [...agent.pieces, ...boardPieces];
+        const unkownPieces = allVariationPieces.filter((vPiece) => {
+            return !knowPieces.some((kPiece) => kPiece.id === vPiece.id);
+        });*/
+
         /* euristic 3 */
-        //const knowPieces = [...agent.pieces, ...boardPieces];
-
-        /* last euristic */
-        var higherValueChosenPiece: ChosenPiece = possibilities[0];
-        var higherValueChosenPieceValue = 0;
-        var currentPieceValue = 0;
-
-        possibilities.forEach((chosenPiece) => {
-            currentPieceValue =
-                chosenPiece.piece.left + chosenPiece.piece.right;
-
-            higherValueChosenPieceValue =
-                higherValueChosenPiece.piece.right +
-                higherValueChosenPiece.piece.left;
-
-            if (currentPieceValue > higherValueChosenPieceValue) {
-                higherValueChosenPiece = chosenPiece;
-            }
-        });
+        var { chosenPiece: chosenPieceWithMostPossiblesInFuture } = recursive(
+            possibilities[0],
+            possibilities,
+            0,
+            boardPieces,
+            agent
+        );
 
         return {
-            chosenPiece: higherValueChosenPiece,
+            chosenPiece: chosenPieceWithMostPossiblesInFuture,
             who: agent,
         };
     };

@@ -1,9 +1,10 @@
-import { ChosenPiece, Piece, Player, Value } from './Types';
+import { DominoVariation } from '../hooks/UseDomino';
+import { ChosenPiece, Piece, Player } from './Types';
 
 export interface SearchAlgorithmProps {
     agent: Player;
     boardPieces: Piece[];
-    piecesThatPlayerDontHave?: Value[];
+    useDominoVariation: () => DominoVariation;
 }
 
 export type SearchAlgorithmResponse = {

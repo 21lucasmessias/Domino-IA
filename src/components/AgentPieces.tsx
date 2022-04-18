@@ -7,7 +7,7 @@ interface AgentPiecesProps {
     canPlay: boolean;
 }
 
-const visible = false;
+const visible = true;
 
 export function AgentPieces({ player, canPlay }: AgentPiecesProps) {
     return (
