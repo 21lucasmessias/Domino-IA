@@ -144,7 +144,7 @@ export const useAStarSearch: (
         }
 
         /* euristic 3 */
-        const knowPieces = [...agent.pieces, ...boardPieces];
+        //const knowPieces = [...agent.pieces, ...boardPieces];
 
         /* last euristic */
         var higherValueChosenPiece: ChosenPiece = possibilities[0];

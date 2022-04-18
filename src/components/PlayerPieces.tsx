@@ -45,7 +45,7 @@ export function PlayerPieces({
                     onClick={buyPiece}
                     maxW="100px"
                     alignSelf={'center'}
-                    disabled={endOfMatch}
+                    disabled={!canPlay || endOfMatch}
                 >
                     Comprar
                 </Button>

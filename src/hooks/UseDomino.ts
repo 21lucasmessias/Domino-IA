@@ -7,6 +7,7 @@ import {
     SearchAlgorithmResponse,
 } from '../models/Algorithm';
 import { Piece, Player, Value } from '../models/Types';
+import { delay } from '../utils/delay';
 import { useStart } from './UseStart';
 import useSyncState from './UseSyncState';
 
@@ -163,7 +164,7 @@ export function useDomino({
     };
 
     const handleExecute = async () => {
-        //await delay(500);
+        await delay(300);
         const searchAlgorithmResponse = execute();
 
         if (!searchAlgorithmResponse) {
