@@ -21,7 +21,7 @@ export function Board({ pieces }: BoardProps) {
                         key={piece.id}
                         backgroundColor="white"
                         gap={1}
-                        minW="160px"
+                        minW="220px"
                         h={'100px'}
                         alignItems="center"
                         borderRadius={'2xl'}

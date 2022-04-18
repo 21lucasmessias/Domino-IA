@@ -34,7 +34,7 @@ export function AgentPieces({ player, canPlay }: AgentPiecesProps) {
                         backgroundColor="white"
                         gap={1}
                         p={1}
-                        minW="160px"
+                        minW="220px"
                         h={'100px'}
                         alignItems="center"
                         borderRadius={'2xl'}
