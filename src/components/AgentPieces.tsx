@@ -7,7 +7,7 @@ interface AgentPiecesProps {
     canPlay: boolean;
 }
 
-const visible = true;
+const visible = false;
 
 export function AgentPieces({ player, canPlay }: AgentPiecesProps) {
     return (
@@ -34,30 +34,30 @@ export function AgentPieces({ player, canPlay }: AgentPiecesProps) {
                         backgroundColor="white"
                         gap={1}
                         p={1}
-                        minW="220px"
-                        h={'100px'}
+                        minW={visible ? '220px' : '60px'}
+                        h={visible ? '100px' : '80px'}
                         alignItems="center"
                         borderRadius={'2xl'}
                         opacity={canPlay ? 1 : 0.4}
                     >
-                        <Flex flex={1} justifyContent="center">
-                            {visible && (
-                                <Image
-                                    src={images.get(piece.left)}
-                                    maxH="90px"
-                                />
-                            )}
-                        </Flex>
-                        <Divider orientation="vertical" size="2" />
-                        <Flex flex={1} justifyContent="center">
-                            {visible && (
-                                <Image
-                                    src={images.get(piece.right)}
-                                    maxH="90px"
-                                    justifySelf={'center'}
-                                />
-                            )}
-                        </Flex>
+                        {visible && (
+                            <>
+                                <Flex flex={1} justifyContent="center">
+                                    <Image
+                                        src={images.get(piece.left)}
+                                        maxH="90px"
+                                    />
+                                </Flex>
+                                <Divider orientation="vertical" size="2" />
+                                <Flex flex={1} justifyContent="center">
+                                    <Image
+                                        src={images.get(piece.right)}
+                                        maxH="90px"
+                                        justifySelf={'center'}
+                                    />
+                                </Flex>
+                            </>
+                        )}
                     </Flex>
                 ))}
             </Flex>

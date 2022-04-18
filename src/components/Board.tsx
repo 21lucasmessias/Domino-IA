@@ -23,6 +23,7 @@ export function Board({ pieces }: BoardProps) {
                         gap={1}
                         minW="220px"
                         h={'100px'}
+                        border={'4px solid orange'}
                         alignItems="center"
                         borderRadius={'2xl'}
                         transform={

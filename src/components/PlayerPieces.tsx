@@ -62,6 +62,7 @@ export function PlayerPieces({
                         minW="220px"
                         h={'100px'}
                         alignItems="center"
+                        border={'4px solid green'}
                         borderRadius={'2xl'}
                         onClick={() => {
                             handlePlacePiece(piece);
@@ -93,6 +94,7 @@ export function PlayerPieces({
                         p={1}
                         minW="220px"
                         h={'100px'}
+                        border={'4px solid green'}
                         alignItems="center"
                         borderRadius={'2xl'}
                         cursor={'not-allowed'}
