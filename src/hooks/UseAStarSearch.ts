@@ -135,6 +135,7 @@ export const useAStarSearch: (
         }
 
         if (depth === 3) {
+            // utilizar o depth para decidir qual é o melhor ao invés da quantidade de possibilidades
             return { chosenPiece, countPossibilities: 0 };
         }
 
@@ -142,7 +143,7 @@ export const useAStarSearch: (
         var chosenPieceWithMostPossiblesInFuture = possibilities[0];
 
         possibilities.forEach((chosenPiece) => {
-            const boardWithtouPiece = [...boardPieces, chosenPiece.piece];
+            const boardWithtouPiece = [...boardPieces, chosenPiece.piece]; // verificar se é no inicio ou final q coloca a peça
             const agentWithoutPiece = {
                 ...agent,
                 pieces: agent.pieces.filter(
