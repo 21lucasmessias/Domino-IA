@@ -165,7 +165,8 @@ export const useAStarSearch: (
 
             if (result.countPossibilities > possibilitiesCount) {
                 chosenPieceWithMostPossiblesInFuture = chosenPiece;
-                possibilitiesCount = result.countPossibilities;
+                possibilitiesCount =
+                    result.countPossibilities + possibilities.length;
             }
         });
 
@@ -200,19 +201,11 @@ export const useAStarSearch: (
             };
         }
 
-        /*const knowPieces = [...agent.pieces, ...boardPieces];
-        const unkownPieces = allVariationPieces.filter((vPiece) => {
-            return !knowPieces.some((kPiece) => kPiece.id === vPiece.id);
-        });*/
-
         /* euristic 3 */
-        var { chosenPiece: chosenPieceWithMostPossiblesInFuture } = recursive(
-            possibilities[0],
-            possibilities,
-            0,
-            boardPieces,
-            agent
-        );
+        var {
+            chosenPiece: chosenPieceWithMostPossiblesInFuture,
+            countPossibilities,
+        } = recursive(possibilities[0], possibilities, 0, boardPieces, agent);
 
         return {
             chosenPiece: chosenPieceWithMostPossiblesInFuture,
