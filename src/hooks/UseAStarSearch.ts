@@ -134,7 +134,7 @@ export const useAStarSearch: (
             return { chosenPiece: parentPiece, depth };
         }
 
-        if (depth === 30) {
+        if (depth === 10) {
             return { chosenPiece: parentPiece, depth };
         }
 
