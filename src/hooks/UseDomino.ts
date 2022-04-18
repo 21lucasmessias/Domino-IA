@@ -60,8 +60,6 @@ export function useDomino({
     const { get: boardPieces, set: setBoardPieces } = useSyncState<
         Array<Piece>
     >([]);
-    const { get: piecesThatPlayerDontHave, set: setPiecesThatPlayerDontHave } =
-        useSyncState<Array<Value>>([]);
 
     const [player, setPlayer] = useState<Player>({
         id: uuid(),
@@ -76,7 +74,6 @@ export function useDomino({
         setAgent,
         setBoardPieces,
         setShift,
-        setPiecesThatPlayerDontHave,
         setCountGames,
         setEndOfMatch,
         setEndOfGame,
@@ -123,20 +120,6 @@ export function useDomino({
     };
 
     const buyPiece = (who: Player): boolean => {
-        if (who.id === player.id) {
-            const startBoardPiece = boardPieces()[0];
-            const endBoardPiece = boardPieces()[boardPieces().length - 1];
-
-            setPiecesThatPlayerDontHave([
-                startBoardPiece.rotated
-                    ? startBoardPiece.right
-                    : startBoardPiece.left,
-                endBoardPiece.rotated
-                    ? endBoardPiece.left
-                    : endBoardPiece.right,
-            ]);
-        }
-
         if (deck().length === 0) {
             setCountDeadline((oldState) => oldState + 1);
             return false;

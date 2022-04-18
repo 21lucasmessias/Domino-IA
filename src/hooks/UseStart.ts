@@ -12,7 +12,6 @@ interface StartProps {
     setShift: React.Dispatch<
         React.SetStateAction<'agent' | 'player' | undefined>
     >;
-    setPiecesThatPlayerDontHave: (newValue: Value[]) => Value[];
     setCountGames: React.Dispatch<React.SetStateAction<number>>;
     setEndOfMatch: React.Dispatch<React.SetStateAction<boolean>>;
     setEndOfGame: React.Dispatch<React.SetStateAction<boolean>>;
@@ -29,7 +28,6 @@ export function useStart({
     setAgent,
     setBoardPieces,
     setShift,
-    setPiecesThatPlayerDontHave,
     setCountGames,
     setEndOfMatch,
     setEndOfGame,
@@ -238,7 +236,6 @@ export function useStart({
             setAgent(newAgent);
             setBoardPieces(newBoardPieces);
             setShift(shift);
-            setPiecesThatPlayerDontHave([]);
         },
         [distributePieces, getStartingPlayer, placeFirstPiece]
     );
