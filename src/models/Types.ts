@@ -30,5 +30,5 @@ export type Player = {
 
 export type ChosenPiece = {
     piece: Piece;
-    location: string;
+    location: Location;
 };

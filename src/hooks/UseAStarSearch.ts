@@ -120,26 +120,31 @@ export const useAStarSearch: () => SearchAlgorithm = () => {
     };
 
     const recursive = (
-        chosenPiece: ChosenPiece,
+        parentPiece: ChosenPiece,
         possibilities: Array<ChosenPiece>,
         depth: number,
         boardPieces: Array<Piece>,
         agent: Player
-    ): { chosenPiece: ChosenPiece; countPossibilities: number } => {
+    ): { chosenPiece: ChosenPiece; depth: number } => {
         if (possibilities.length === 0) {
-            return { chosenPiece, countPossibilities: 0 };
+            return { chosenPiece: parentPiece, depth };
         }
 
-        if (depth === 3) {
-            // utilizar o depth para decidir qual é o melhor ao invés da quantidade de possibilidades
-            return { chosenPiece, countPossibilities: 0 };
+        if (depth === 10) {
+            return { chosenPiece: parentPiece, depth };
         }
 
-        var possibilitiesCount = -1;
+        var maxDepth = 0;
         var chosenPieceWithMostPossiblesInFuture = possibilities[0];
 
         possibilities.forEach((chosenPiece) => {
-            const boardWithtouPiece = [...boardPieces, chosenPiece.piece]; // verificar se é no inicio ou final q coloca a peça
+            var boardWithoutPiece: Array<Piece> = [];
+            if (chosenPiece.location === 'end') {
+                boardWithoutPiece = [...boardPieces, chosenPiece.piece];
+            } else {
+                boardWithoutPiece = [chosenPiece.piece, ...boardPieces];
+            }
+
             const agentWithoutPiece = {
                 ...agent,
                 pieces: agent.pieces.filter(
@@ -148,7 +153,7 @@ export const useAStarSearch: () => SearchAlgorithm = () => {
             };
 
             const possibilitiesCurrent = verifyPossibilities(
-                boardWithtouPiece,
+                boardWithoutPiece,
                 agentWithoutPiece
             );
 
@@ -156,20 +161,19 @@ export const useAStarSearch: () => SearchAlgorithm = () => {
                 chosenPiece,
                 possibilitiesCurrent,
                 depth + 1,
-                boardWithtouPiece,
+                boardWithoutPiece,
                 agentWithoutPiece
             );
 
-            if (result.countPossibilities > possibilitiesCount) {
-                chosenPieceWithMostPossiblesInFuture = chosenPiece;
-                possibilitiesCount =
-                    result.countPossibilities + possibilities.length;
+            if (result.depth > maxDepth) {
+                chosenPieceWithMostPossiblesInFuture = parentPiece;
+                maxDepth = result.depth;
             }
         });
 
         return {
             chosenPiece: chosenPieceWithMostPossiblesInFuture,
-            countPossibilities: possibilitiesCount,
+            depth: maxDepth,
         };
     };
 
@@ -201,10 +205,10 @@ export const useAStarSearch: () => SearchAlgorithm = () => {
         }
 
         /* euristic 3 */
-        var {
-            chosenPiece: chosenPieceWithMostPossiblesInFuture,
-            countPossibilities,
-        } = recursive(possibilities[0], possibilities, 0, boardPieces, who);
+        var { chosenPiece: chosenPieceWithMostPossiblesInFuture, depth } =
+            recursive(possibilities[0], possibilities, 0, boardPieces, who);
+
+        console.log({ chosenPieceWithMostPossiblesInFuture, depth });
 
         return {
             chosenPiece: chosenPieceWithMostPossiblesInFuture,
