@@ -208,8 +208,6 @@ export const useAStarSearch: () => SearchAlgorithm = () => {
         var { chosenPiece: chosenPieceWithMostPossiblesInFuture, depth } =
             recursive(possibilities[0], possibilities, 0, boardPieces, who);
 
-        console.log({ chosenPieceWithMostPossiblesInFuture, depth });
-
         return {
             chosenPiece: chosenPieceWithMostPossiblesInFuture,
             who: who,

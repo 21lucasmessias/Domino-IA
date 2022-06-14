@@ -2,9 +2,9 @@ import { Flex, useToast } from '@chakra-ui/react';
 import { Header } from './components/Header';
 import { useDomino } from './hooks/UseDomino';
 import { useMonetaryPieces } from './variations/Monetary';
-import { useGreedySearch } from './hooks/UseGreedySearch';
-import { Game } from './components/Game';
 import { useAStarSearch } from './hooks/UseAStarSearch';
+import { useLearnedOptions } from './hooks/UseLearnedOptions';
+import { Game } from './components/Game';
 
 const TRAINING_MODE = false;
 

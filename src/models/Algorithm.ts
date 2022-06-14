@@ -11,5 +11,8 @@ export type SearchAlgorithmResponse = {
 } | null;
 
 export interface SearchAlgorithm {
-    execute: (props: SearchAlgorithmProps) => SearchAlgorithmResponse;
+    execute?: (props: SearchAlgorithmProps) => SearchAlgorithmResponse;
+    asyncExecute?: (
+        props: SearchAlgorithmProps
+    ) => Promise<SearchAlgorithmResponse | null>;
 }

@@ -7,6 +7,10 @@ import { delay } from '../utils/delay';
 import { useStart } from './UseStart';
 import useSyncState from './UseSyncState';
 
+import { useAStarSearch } from './UseAStarSearch';
+import { useGreedySearch } from './UseGreedySearch';
+import { useLearnedOptions } from './UseLearnedOptions';
+
 export interface DominoVariation {
     pieces: Array<Piece>;
     initialQtyOfPieces: number;
@@ -98,7 +102,7 @@ export function useDomino({
         setPlayer(player);
     };
 
-    const { execute } = useSearchAlgorithm();
+    const { execute, asyncExecute } = useSearchAlgorithm();
 
     const removePieceFromPlayer = (piece: Piece, who: Player) => {
         const newPlayer = { ...who };
@@ -140,10 +144,21 @@ export function useDomino({
     const handleExecute = async (who: Player) => {
         await delay(20);
 
-        const searchAlgorithmResponse = execute({
-            who: who,
-            boardPieces: boardPieces(),
-        });
+        let searchAlgorithmResponse = null;
+
+        if (execute) {
+            searchAlgorithmResponse = execute({
+                who: who,
+                boardPieces: boardPieces(),
+            });
+        } else if (asyncExecute) {
+            searchAlgorithmResponse = await asyncExecute({
+                who: who,
+                boardPieces: boardPieces(),
+            });
+        } else {
+            throw new Error('Algorithm not defined');
+        }
 
         if (!searchAlgorithmResponse) {
             if (buyPiece(who)) {
