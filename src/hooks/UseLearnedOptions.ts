@@ -122,14 +122,12 @@ export const useLearnedOptions: () => SearchAlgorithm = () => {
         }
 
         try {
-            const chosenPiece = await axios.get<ChosenPiece>(
+            const chosenPiece = await axios.post<ChosenPiece>(
                 'http://localhost:3001/choose',
+                { possibilities },
                 {
                     headers: {
                         'Content-Type': 'application/json',
-                    },
-                    params: {
-                        possibilities,
                     },
                 }
             );
