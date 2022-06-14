@@ -15,6 +15,7 @@ export interface DominoVariation {
 interface DominoGameProps {
     useDominoVariation: () => DominoVariation;
     useSearchAlgorithm: () => SearchAlgorithm;
+    trainingMode: boolean;
 }
 
 interface DominoGame {
@@ -33,6 +34,7 @@ interface DominoGame {
 export function useDomino({
     useDominoVariation,
     useSearchAlgorithm,
+    trainingMode,
 }: DominoGameProps): DominoGame {
     const toast = useToast();
 
@@ -135,16 +137,16 @@ export function useDomino({
         return true;
     };
 
-    const handleExecute = async () => {
+    const handleExecute = async (who: Player) => {
         await delay(10);
         const searchAlgorithmResponse = execute({
-            who: agent(),
+            who: who,
             boardPieces: boardPieces(),
         });
 
         if (!searchAlgorithmResponse) {
-            if (buyPiece(agent())) {
-                handleExecute();
+            if (buyPiece(who)) {
+                handleExecute(who);
             } else {
                 toast.closeAll();
                 toast({
@@ -200,8 +202,15 @@ export function useDomino({
 
     /* Verify if is turn of agent and execute search algorithm */
     useEffect(() => {
-        if (shift === 'agent') {
-            handleExecute();
+        if (
+            !endOfGame &&
+            (player.pieces.length > 0 || agent().pieces.length > 0)
+        ) {
+            if (shift === 'agent') {
+                handleExecute(agent());
+            } else {
+                handleExecute(player);
+            }
         }
     }, [shift]);
 

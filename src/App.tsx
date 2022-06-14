@@ -6,7 +6,7 @@ import { useGreedySearch } from './hooks/UseGreedySearch';
 import { Game } from './components/Game';
 import { useAStarSearch } from './hooks/UseAStarSearch';
 
-const TRAINING_MODE = false;
+const TRAINING_MODE = true;
 
 function App() {
     const toast = useToast();
@@ -24,6 +24,7 @@ function App() {
     } = useDomino({
         useDominoVariation: useMonetaryPieces,
         useSearchAlgorithm: useAStarSearch,
+        trainingMode: TRAINING_MODE,
     });
 
     const handleBuy = () => {
@@ -65,10 +66,10 @@ function App() {
                 <Game
                     isTrainingMode={TRAINING_MODE}
                     buyPiece={handleBuy}
-                    agent={agent}
-                    boardPieces={boardPieces}
-                    player={player}
                     placePiece={placePiece}
+                    agent={agent}
+                    player={player}
+                    boardPieces={boardPieces}
                     shift={shift}
                     endOfGame={endOfGame}
                 />
