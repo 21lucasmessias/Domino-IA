@@ -1,12 +1,8 @@
 import { useToast } from '@chakra-ui/react';
 import { useMemo, useState, useEffect } from 'react';
 import { v4 as uuid } from 'uuid';
-import {
-    SearchAlgorithm,
-    SearchAlgorithmProps,
-    SearchAlgorithmResponse,
-} from '../models/Algorithm';
-import { Piece, Player, Value } from '../models/Types';
+import { SearchAlgorithm, SearchAlgorithmResponse } from '../models/Algorithm';
+import { Piece, Player } from '../models/Types';
 import { delay } from '../utils/delay';
 import { useStart } from './UseStart';
 import useSyncState from './UseSyncState';
@@ -18,7 +14,7 @@ export interface DominoVariation {
 
 interface DominoGameProps {
     useDominoVariation: () => DominoVariation;
-    useSearchAlgorithm: (props: SearchAlgorithmProps) => SearchAlgorithm;
+    useSearchAlgorithm: () => SearchAlgorithm;
 }
 
 interface DominoGame {
@@ -27,7 +23,6 @@ interface DominoGame {
     agent: Player;
     boardPieces: Piece[];
     shift: string | undefined;
-    endOfMatch: boolean;
     endOfGame: boolean;
     placePiece: (props: SearchAlgorithmResponse) => void;
     start: (agent?: Player, player?: Player) => void;
@@ -41,15 +36,14 @@ export function useDomino({
 }: DominoGameProps): DominoGame {
     const toast = useToast();
 
-    const [countGames, setCountGames] = useState(0);
-    const [endOfMatch, setEndOfMatch] = useState(false);
     const [endOfGame, setEndOfGame] = useState(false);
 
     const [shift, setShift] = useState<'agent' | 'player' | undefined>(
         undefined
     );
 
-    const [countDeadline, setCountDeadline] = useState(0);
+    const [countSequenceOfImpossiblePlay, setCountSequenceOfImpossiblePlay] =
+        useState(0);
 
     const { get: deck, set: setDeck } = useSyncState<Array<Piece>>([]);
     const { get: agent, set: setAgent } = useSyncState<Player>({
@@ -74,31 +68,14 @@ export function useDomino({
         setAgent,
         setBoardPieces,
         setShift,
-        setCountGames,
-        setEndOfMatch,
         setEndOfGame,
     });
-
-    const { execute } = useSearchAlgorithm({
-        agent: agent(),
-        boardPieces: boardPieces(),
-        useDominoVariation,
-    });
-
-    const removePieceFromPlayer = (piece: Piece, who: Player) => {
-        const newPlayer = { ...who };
-
-        newPlayer.pieces = newPlayer.pieces.filter(
-            (playerPiece) => playerPiece.id !== piece.id
-        );
-
-        return newPlayer;
-    };
 
     const updatePlayersScores = (agent: Player, player: Player) => {
         var agentPiecesCounter = 0;
         var playerPiecesCounter = 0;
         var currentPieceValue = 0;
+
         agent.pieces.forEach((piece) => {
             currentPieceValue = piece.left + piece.right;
             agentPiecesCounter += currentPieceValue;
@@ -119,9 +96,21 @@ export function useDomino({
         setPlayer(player);
     };
 
+    const { execute } = useSearchAlgorithm();
+
+    const removePieceFromPlayer = (piece: Piece, who: Player) => {
+        const newPlayer = { ...who };
+
+        newPlayer.pieces = newPlayer.pieces.filter(
+            (playerPiece) => playerPiece.id !== piece.id
+        );
+
+        return newPlayer;
+    };
+
     const buyPiece = (who: Player): boolean => {
         if (deck().length === 0) {
-            setCountDeadline((oldState) => oldState + 1);
+            setCountSequenceOfImpossiblePlay((oldState) => oldState + 1);
             return false;
         }
 
@@ -147,8 +136,11 @@ export function useDomino({
     };
 
     const handleExecute = async () => {
-        await delay(300);
-        const searchAlgorithmResponse = execute();
+        await delay(10);
+        const searchAlgorithmResponse = execute({
+            who: agent(),
+            boardPieces: boardPieces(),
+        });
 
         if (!searchAlgorithmResponse) {
             if (buyPiece(agent())) {
@@ -199,7 +191,7 @@ export function useDomino({
             setBoardPieces(newBoardPieces);
         }
 
-        setCountDeadline(0);
+        setCountSequenceOfImpossiblePlay(0);
 
         if (newWho.pieces.length != 0) {
             toggleShift();
@@ -215,8 +207,7 @@ export function useDomino({
 
     /* Verify Game Winner */
     useEffect(() => {
-        if (!endOfGame && countGames === 3) {
-            setEndOfGame(true);
+        if (endOfGame) {
             setShift(undefined);
 
             toast.closeAll();
@@ -247,12 +238,11 @@ export function useDomino({
                 });
             }
         }
-    }, [countGames, player, agent, endOfGame]);
+    }, [endOfGame, player, agent]);
 
     /* Verify Draw */
     useEffect(() => {
-        if (countDeadline >= 2) {
-            setCountDeadline(0);
+        if (countSequenceOfImpossiblePlay >= 2) {
             toast.closeAll();
             toast({
                 title: 'Empate',
@@ -260,45 +250,42 @@ export function useDomino({
                 position: 'top-end',
                 isClosable: true,
             });
-            var newAgent = agent();
-            var newPlayer = player;
 
-            setEndOfMatch(true);
-            updatePlayersScores(newAgent, newPlayer);
-            setCountGames(countGames + 1);
+            updatePlayersScores(agent(), player);
+            setEndOfGame(true);
+            setCountSequenceOfImpossiblePlay(0);
         }
-    }, [countDeadline, countGames]);
+    }, [countSequenceOfImpossiblePlay]);
 
-    /* Verify Match Winner */
+    /* Callback to check if game is over */
     useEffect(() => {
-        if (!endOfMatch && boardPieces().length > 0) {
+        if (
+            !endOfGame &&
+            (player.pieces.length > 0 || agent().pieces.length > 0)
+        ) {
             if (player.pieces.length === 0) {
                 toast({
-                    title: 'Você ganhou a rodada',
+                    title: 'Você ganhou a partida',
                     status: 'success',
                     position: 'top-end',
                     isClosable: true,
                 });
 
-                setEndOfMatch(true);
-                setCountGames((countGames) => countGames + 1);
                 updatePlayersScores(agent(), player);
-                setShift(undefined);
+                setEndOfGame(true);
             } else if (agent().pieces.length === 0) {
                 toast({
-                    title: 'Agente ganhou a rodada',
+                    title: 'Agente ganhou a partida',
                     status: 'error',
                     position: 'top-end',
                     isClosable: true,
                 });
 
-                setEndOfMatch(true);
-                setCountGames((countGames) => countGames + 1);
                 updatePlayersScores(agent(), player);
-                setShift(undefined);
+                setEndOfGame(true);
             }
         }
-    }, [player, agent, boardPieces, endOfMatch]);
+    }, [player, agent, endOfGame]);
 
     const value = useMemo(
         () => ({
@@ -307,14 +294,13 @@ export function useDomino({
             agent: agent(),
             shift,
             boardPieces: boardPieces(),
-            endOfMatch,
             endOfGame,
             placePiece,
             start,
             buyPiece,
             toggleShift,
         }),
-        [deck, player, agent, shift, boardPieces, endOfGame, endOfGame]
+        [deck, player, agent, shift, boardPieces, endOfGame]
     );
 
     return value;

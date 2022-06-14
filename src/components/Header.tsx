@@ -18,9 +18,9 @@ export function Header({ start, startAgain, endOfGame }: HeaderProps) {
                 <Button
                     colorScheme={'green'}
                     onClick={startAgain}
-                    disabled={endOfGame}
+                    disabled={!endOfGame}
                 >
-                    Próxima partida
+                    Jogar novamente
                 </Button>
             </Flex>
         </Flex>

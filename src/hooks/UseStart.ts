@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { v4 as uuid } from 'uuid';
 import { DominoVariation } from './UseDomino';
-import { Piece, Player, Value } from '../models/Types';
+import { Piece, Player } from '../models/Types';
 
 interface StartProps {
     useDominoVariation: () => DominoVariation;
@@ -12,8 +12,6 @@ interface StartProps {
     setShift: React.Dispatch<
         React.SetStateAction<'agent' | 'player' | undefined>
     >;
-    setCountGames: React.Dispatch<React.SetStateAction<number>>;
-    setEndOfMatch: React.Dispatch<React.SetStateAction<boolean>>;
     setEndOfGame: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -28,8 +26,6 @@ export function useStart({
     setAgent,
     setBoardPieces,
     setShift,
-    setCountGames,
-    setEndOfMatch,
     setEndOfGame,
 }: StartProps): StartResponse {
     const { pieces, initialQtyOfPieces } = useDominoVariation();
@@ -197,48 +193,36 @@ export function useStart({
         };
     }, []);
 
-    const start = useCallback(
-        (agent?: Player, player?: Player) => {
-            if (agent && player) {
-                var { newDeck, newPlayer, newAgent } = distributePieces(
-                    agent,
-                    player
-                );
-            } else {
-                var { newDeck, newPlayer, newAgent } = distributePieces();
-                setCountGames(0);
-            }
+    const start = useCallback(() => {
+        var { newDeck, newPlayer, newAgent } = distributePieces();
 
-            var newBoardPieces = [];
-            var shift: 'agent' | 'player' = 'player';
+        var newBoardPieces = [];
+        var shift: 'agent' | 'player' = 'player';
 
-            const { piece, startingPlayer } = getStartingPlayer(
-                newAgent.pieces,
-                newPlayer.pieces
-            );
+        const { piece, startingPlayer } = getStartingPlayer(
+            newAgent.pieces,
+            newPlayer.pieces
+        );
 
-            if (startingPlayer === 'agent') {
-                const { newWho, newBoard } = placeFirstPiece(piece, newAgent);
-                newAgent = newWho;
-                newBoardPieces = newBoard;
-                shift = 'player';
-            } else {
-                const { newWho, newBoard } = placeFirstPiece(piece, newPlayer);
-                newPlayer = newWho;
-                newBoardPieces = newBoard;
-                shift = 'agent';
-            }
+        if (startingPlayer === 'agent') {
+            const { newWho, newBoard } = placeFirstPiece(piece, newAgent);
+            newAgent = newWho;
+            newBoardPieces = newBoard;
+            shift = 'player';
+        } else {
+            const { newWho, newBoard } = placeFirstPiece(piece, newPlayer);
+            newPlayer = newWho;
+            newBoardPieces = newBoard;
+            shift = 'agent';
+        }
 
-            setEndOfMatch(false);
-            setEndOfGame(false);
-            setDeck(newDeck);
-            setPlayer(newPlayer);
-            setAgent(newAgent);
-            setBoardPieces(newBoardPieces);
-            setShift(shift);
-        },
-        [distributePieces, getStartingPlayer, placeFirstPiece]
-    );
+        setEndOfGame(false);
+        setDeck(newDeck);
+        setPlayer(newPlayer);
+        setAgent(newAgent);
+        setBoardPieces(newBoardPieces);
+        setShift(shift);
+    }, [distributePieces, getStartingPlayer, placeFirstPiece]);
 
     const value = useMemo(
         () => ({

@@ -6,11 +6,7 @@ import {
 } from '../models/Algorithm';
 import { ChosenPiece, Piece, Player } from '../models/Types';
 
-export const useAStarSearch: (
-    props: SearchAlgorithmProps
-) => SearchAlgorithm = ({ agent, boardPieces, useDominoVariation }) => {
-    const { pieces: allVariationPieces } = useDominoVariation();
-
+export const useAStarSearch: () => SearchAlgorithm = () => {
     const verifyPossibilities = (
         boardPieces: Array<Piece>,
         agent: Player
@@ -177,8 +173,10 @@ export const useAStarSearch: (
         };
     };
 
-    const execute = (): SearchAlgorithmResponse | null => {
-        const possibilities = verifyPossibilities(boardPieces, agent);
+    const execute: (
+        props: SearchAlgorithmProps
+    ) => SearchAlgorithmResponse | null = ({ who, boardPieces }) => {
+        const possibilities = verifyPossibilities(boardPieces, who);
 
         /* buy piece */
         if (possibilities.length === 0) {
@@ -189,7 +187,7 @@ export const useAStarSearch: (
         if (possibilities.length === 1) {
             return {
                 chosenPiece: possibilities[0],
-                who: agent,
+                who: who,
             };
         }
 
@@ -198,7 +196,7 @@ export const useAStarSearch: (
         if (higherDouble !== null) {
             return {
                 chosenPiece: higherDouble,
-                who: agent,
+                who: who,
             };
         }
 
@@ -206,11 +204,11 @@ export const useAStarSearch: (
         var {
             chosenPiece: chosenPieceWithMostPossiblesInFuture,
             countPossibilities,
-        } = recursive(possibilities[0], possibilities, 0, boardPieces, agent);
+        } = recursive(possibilities[0], possibilities, 0, boardPieces, who);
 
         return {
             chosenPiece: chosenPieceWithMostPossiblesInFuture,
-            who: agent,
+            who: who,
         };
     };
 

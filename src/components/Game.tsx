@@ -16,23 +16,25 @@ import { AgentPieces } from './AgentPieces';
 import { Board } from './Board';
 import { PlayerPieces } from './PlayerPieces';
 interface GameProps {
+    isTrainingMode: boolean;
     agent: Player;
     player: Player;
     boardPieces: Array<Piece>;
     placePiece: (props: SearchAlgorithmResponse) => void;
     shift: string | undefined;
     buyPiece: () => void;
-    endOfMatch: boolean;
+    endOfGame: boolean;
 }
 
 export function Game({
+    isTrainingMode,
     agent,
     player,
     boardPieces,
     placePiece,
     shift,
     buyPiece,
-    endOfMatch,
+    endOfGame,
 }: GameProps) {
     const [chosenPieces, setChosenPieces] = useState<Array<ChosenPiece>>([]);
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -199,14 +201,18 @@ export function Game({
         >
             <AgentPieces player={agent} canPlay={shift === 'agent'} />
             <Board pieces={boardPieces} />
-            <PlayerPieces
-                possiblePieces={possiblePieces}
-                player={player}
-                handlePlacePiece={handlePlaceClick}
-                canPlay={shift === 'player' && !endOfMatch}
-                buyPiece={buyPiece}
-                endOfMatch={endOfMatch}
-            />
+            {isTrainingMode ? (
+                <AgentPieces player={player} canPlay={shift === 'player'} />
+            ) : (
+                <PlayerPieces
+                    possiblePieces={possiblePieces}
+                    player={player}
+                    handlePlacePiece={handlePlaceClick}
+                    canPlay={shift === 'player' && !endOfGame}
+                    buyPiece={buyPiece}
+                    endOfGame={endOfGame}
+                />
+            )}
 
             <AlertDialog
                 isOpen={isOpen}

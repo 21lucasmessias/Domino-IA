@@ -1,10 +1,8 @@
-import { DominoVariation } from '../hooks/UseDomino';
 import { ChosenPiece, Piece, Player } from './Types';
 
 export interface SearchAlgorithmProps {
-    agent: Player;
+    who: Player;
     boardPieces: Piece[];
-    useDominoVariation: () => DominoVariation;
 }
 
 export type SearchAlgorithmResponse = {
@@ -13,5 +11,5 @@ export type SearchAlgorithmResponse = {
 } | null;
 
 export interface SearchAlgorithm {
-    execute: () => SearchAlgorithmResponse;
+    execute: (props: SearchAlgorithmProps) => SearchAlgorithmResponse;
 }

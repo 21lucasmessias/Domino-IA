@@ -6,16 +6,16 @@ import { useGreedySearch } from './hooks/UseGreedySearch';
 import { Game } from './components/Game';
 import { useAStarSearch } from './hooks/UseAStarSearch';
 
+const TRAINING_MODE = false;
+
 function App() {
     const toast = useToast();
 
     const {
-        deck,
         player,
         agent,
         shift,
         boardPieces,
-        endOfMatch,
         endOfGame,
         placePiece,
         start,
@@ -63,13 +63,14 @@ function App() {
                     endOfGame={endOfGame}
                 />
                 <Game
+                    isTrainingMode={TRAINING_MODE}
                     buyPiece={handleBuy}
                     agent={agent}
                     boardPieces={boardPieces}
                     player={player}
                     placePiece={placePiece}
                     shift={shift}
-                    endOfMatch={endOfMatch}
+                    endOfGame={endOfGame}
                 />
             </Flex>
         </Flex>

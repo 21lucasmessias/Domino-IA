@@ -4,12 +4,13 @@ import {
     SearchAlgorithmProps,
     SearchAlgorithmResponse,
 } from '../models/Algorithm';
-import { ChosenPiece, Piece } from '../models/Types';
+import { ChosenPiece, Piece, Player } from '../models/Types';
 
-export const useGreedySearch: (
-    props: SearchAlgorithmProps
-) => SearchAlgorithm = ({ agent, boardPieces }) => {
-    const verifyPossibilities = (): Array<ChosenPiece> => {
+export const useGreedySearch: () => SearchAlgorithm = () => {
+    const verifyPossibilities = (
+        who: Player,
+        boardPieces: Piece[]
+    ): Array<ChosenPiece> => {
         const newPossiblePieces: Array<Piece> = [];
 
         if (boardPieces.length === 0) {
@@ -37,7 +38,7 @@ export const useGreedySearch: (
             };
         }
 
-        agent.pieces.forEach((piece) => {
+        who.pieces.forEach((piece) => {
             if (
                 startPiece.left === piece.left ||
                 startPiece.left === piece.right
@@ -98,8 +99,10 @@ export const useGreedySearch: (
         return newChosenPieces;
     };
 
-    const execute = (): SearchAlgorithmResponse | null => {
-        const possibilities = verifyPossibilities();
+    const execute: (
+        props: SearchAlgorithmProps
+    ) => SearchAlgorithmResponse | null = ({ who, boardPieces }) => {
+        const possibilities = verifyPossibilities(who, boardPieces);
 
         if (possibilities.length === 0) {
             return null;
@@ -111,7 +114,7 @@ export const useGreedySearch: (
                     piece: possibilities[0].piece,
                     location: possibilities[0].location,
                 },
-                who: agent,
+                who: who,
             };
         }
 
@@ -134,7 +137,7 @@ export const useGreedySearch: (
 
         return {
             chosenPiece: higherValueChosenPiece,
-            who: agent,
+            who: who,
         };
     };
 
