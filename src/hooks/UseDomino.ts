@@ -10,6 +10,7 @@ import useSyncState from './UseSyncState';
 import { useAStarSearch } from './UseAStarSearch';
 import { useGreedySearch } from './UseGreedySearch';
 import { useLearnedOptions } from './UseLearnedOptions';
+import axios from 'axios';
 
 export interface DominoVariation {
     pieces: Array<Piece>;
@@ -196,9 +197,15 @@ export function useDomino({
         var newBoardPieces = [...boardPieces()];
 
         if (chosenPiece.location === 'start') {
-            newBoardPieces = [chosenPiece.piece, ...newBoardPieces];
+            newBoardPieces = [
+                { ...chosenPiece.piece, playerId: who.id },
+                ...newBoardPieces,
+            ];
         } else {
-            newBoardPieces = [...newBoardPieces, chosenPiece.piece];
+            newBoardPieces = [
+                ...newBoardPieces,
+                { ...chosenPiece.piece, playerId: who.id },
+            ];
         }
 
         if (newWho.id === player.id) {
@@ -236,6 +243,27 @@ export function useDomino({
         }
     }, [shift]);
 
+    const updateResults = (winnerId: string) => {
+        if (trainingMode) {
+            axios.post(
+                'http:localhost:3001/result',
+                {
+                    winnerMoves: boardPieces().filter(
+                        (move) => move.playerId === winnerId
+                    ),
+                    loserMoves: boardPieces().filter(
+                        (move) => move.playerId !== winnerId
+                    ),
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+        }
+    };
+
     /* Verify Game Winner */
     useEffect(() => {
         if (endOfGame) {
@@ -254,6 +282,7 @@ export function useDomino({
             });
 
             if (player.score > agent().score) {
+                updateResults(player.id);
                 toast({
                     title: 'Você ganhou a partida, parabéns!',
                     status: 'success',
@@ -261,6 +290,7 @@ export function useDomino({
                     isClosable: true,
                 });
             } else {
+                updateResults(agent().id);
                 toast({
                     title: 'Você perdeu a partida, tente novamente!',
                     status: 'error',

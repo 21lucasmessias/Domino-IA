@@ -18,6 +18,7 @@ export type Piece = {
     left: Value;
     right: Value;
     rotated: boolean;
+    playerId: string;
 };
 
 export type Location = 'start' | 'end';
