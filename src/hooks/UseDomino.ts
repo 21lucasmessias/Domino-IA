@@ -246,7 +246,7 @@ export function useDomino({
     const updateResults = (winnerId: string) => {
         if (trainingMode) {
             axios.post(
-                'http:localhost:3001/result',
+                'http:localhost:3001/insert-moves',
                 {
                     winnerMoves: boardPieces().filter(
                         (move) => move.playerId === winnerId
