@@ -1,0 +1,14 @@
+{
+  "name": "connect-to-mongodb",
+  "version": "1.0.0",
+  "description": "For connect to MongoDB",
+  "main": "connectToMongoDB.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^4.7.0"
+  }
+}
