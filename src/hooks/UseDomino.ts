@@ -251,7 +251,7 @@ export function useDomino({
                     winnerMoves: boardPieces().filter(
                         (move) => move.playerId === winnerId
                     ),
-                    loserMoves: boardPieces().filter(
+                    lossesMoves: boardPieces().filter(
                         (move) => move.playerId !== winnerId
                     ),
                 },
