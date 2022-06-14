@@ -138,7 +138,8 @@ export function useDomino({
     };
 
     const handleExecute = async (who: Player) => {
-        await delay(10);
+        await delay(20);
+
         const searchAlgorithmResponse = execute({
             who: who,
             boardPieces: boardPieces(),
@@ -202,14 +203,20 @@ export function useDomino({
 
     /* Verify if is turn of agent and execute search algorithm */
     useEffect(() => {
-        if (
-            !endOfGame &&
-            (player.pieces.length > 0 || agent().pieces.length > 0)
-        ) {
+        if (trainingMode) {
+            if (
+                !endOfGame &&
+                (player.pieces.length > 0 || agent().pieces.length > 0)
+            ) {
+                if (shift === 'agent') {
+                    handleExecute(agent());
+                } else {
+                    handleExecute(player);
+                }
+            }
+        } else {
             if (shift === 'agent') {
                 handleExecute(agent());
-            } else {
-                handleExecute(player);
             }
         }
     }, [shift]);

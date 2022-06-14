@@ -6,7 +6,7 @@ import { useGreedySearch } from './hooks/UseGreedySearch';
 import { Game } from './components/Game';
 import { useAStarSearch } from './hooks/UseAStarSearch';
 
-const TRAINING_MODE = true;
+const TRAINING_MODE = false;
 
 function App() {
     const toast = useToast();
