@@ -243,9 +243,9 @@ export function useDomino({
         }
     }, [shift]);
 
-    const updateResults = (winnerId: string) => {
+    const updateResults = async (winnerId: string) => {
         if (trainingMode) {
-            axios.post(
+            await axios.post(
                 'http:localhost:3001/insert-moves',
                 {
                     winnerMoves: boardPieces().filter(

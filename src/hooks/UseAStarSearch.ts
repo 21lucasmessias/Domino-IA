@@ -130,7 +130,7 @@ export const useAStarSearch: () => SearchAlgorithm = () => {
             return { chosenPiece: parentPiece, depth };
         }
 
-        if (depth === 10) {
+        if (depth === 4) {
             return { chosenPiece: parentPiece, depth };
         }
 

@@ -23,7 +23,7 @@ function App() {
         toggleShift,
     } = useDomino({
         useDominoVariation: useMonetaryPieces,
-        useSearchAlgorithm: useAStarSearch,
+        useSearchAlgorithm: useLearnedOptions,
         trainingMode: TRAINING_MODE,
     });
 
