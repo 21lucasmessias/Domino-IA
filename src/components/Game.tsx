@@ -107,13 +107,14 @@ export function Game({
             };
         }
 
-        const newChosenPieces = [];
+        const newChosenPieces: ChosenPiece[] = [];
 
         if (startPiece.left === piece.right) {
             newChosenPieces.push({
                 piece: {
                     ...piece,
                     rotated: false,
+                    playerId: player.id,
                 },
                 location: 'start',
             });
@@ -124,6 +125,7 @@ export function Game({
                 piece: {
                     ...piece,
                     rotated: true,
+                    playerId: player.id,
                 },
                 location: 'start',
             });
@@ -134,6 +136,7 @@ export function Game({
                 piece: {
                     ...piece,
                     rotated: false,
+                    playerId: player.id,
                 },
                 location: 'end',
             });
@@ -144,6 +147,7 @@ export function Game({
                 piece: {
                     ...piece,
                     rotated: true,
+                    playerId: player.id,
                 },
                 location: 'end',
             });
